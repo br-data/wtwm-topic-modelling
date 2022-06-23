@@ -1,0 +1,448 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "build": {
+      "description": "Build configurations, e.g. for installing additional dependencies",
+      "properties": {
+        "command": {
+          "description": "Command for building your job/service/website (websites builds just accept node!)",
+          "type": "string"
+        },
+        "outputFolder": {
+          "description": "Folder which contains your whole application logic (leave empty for adding all files)",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "docker": {
+      "description": "Settings for the environment, where a service/job/cronjob runs",
+      "properties": {
+        "ignore": {
+          "description": "Files that are not relevant for deployment (e.g. tests)",
+          "type": "string"
+        },
+        "imageFrom": {
+          "description": "If no preset is chosen, you can define an image (e.g. from https://hub.docker.com/) yourself",
+          "type": "string"
+        },
+        "preparationCommand": {
+          "description": "Use this line to install additional native tools to your machine (e.g. \"apk add --no-cache curl\" without prepending \"RUN\"!)",
+          "type": "string"
+        },
+        "preset": {
+          "description": "Preset of image serving for application with some preinstalled stuff (\"node\"=node:14-alpine/\"java\"=openjdk:8-jdk-alpine + maven/\"python\"=python:3.7.10-slim-buster)",
+          "enum": ["java-mvn", "node", "python", "yarn"],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "image": {
+      "description": "Settings for the environment, where a service/job/cronjob runs",
+      "properties": {
+        "ignore": {
+          "description": "Files that are not relevant for deployment (e.g. tests)",
+          "type": "string"
+        },
+        "imageFrom": {
+          "description": "If no preset is chosen, you can define an image (e.g. from https://hub.docker.com/) yourself",
+          "type": "string"
+        },
+        "preparationCommand": {
+          "description": "Use this line to install additional native tools to your machine (e.g. \"apk add --no-cache curl\" without prepending \"RUN\"!)",
+          "type": "string"
+        },
+        "preset": {
+          "description": "Preset of image serving for application with some preinstalled stuff (\"node\"=node:14-alpine/\"java\"=openjdk:8-jdk-alpine + maven/\"python\"=python:3.7.10-slim-buster)",
+          "enum": ["java-mvn", "node", "python", "yarn"],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "isEnabled": {
+      "description": "Whether to run the deployment or not",
+      "type": "boolean"
+    },
+    "run": {
+      "description": "Run configurations",
+      "properties": {
+        "command": {
+          "description": "Command for starting your job/service/cronjob",
+          "type": "string"
+        },
+        "envs": {
+          "description": "Custom Environment Variables (also available during build!)\nDefaults are: STAGE(develop/live),HOST,PORT",
+          "items": {
+            "properties": {
+              "name": {
+                "description": "The name of the env (free choice)",
+                "type": "string"
+              },
+              "value": {
+                "description": "Any value (will be interpreted as string)",
+                "type": "string"
+              },
+              "valueFrom": {
+                "properties": {
+                  "secretKeyRef": {
+                    "properties": {
+                      "key": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["key", "name"],
+                    "type": "object"
+                  }
+                },
+                "required": ["secretKeyRef"],
+                "type": "object"
+              }
+            },
+            "required": ["name"],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["command"],
+      "type": "object"
+    },
+    "settings": {
+      "description": "General Deployment settings",
+      "properties": {
+        "alerts": {
+          "description": "Set your types of alerts here (types: \"uptime\", \"logs\", \"storage\")",
+          "items": {
+            "properties": {
+              "channels": {
+                "description": "Channels from cloud monitoring to send alerts to",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "emails": {
+                "description": "Email addresses, which will receive alert",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "type": "string"
+              },
+              "policies": {
+                "description": "Condition policies when to alert the channels",
+                "items": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "name": {
+                          "description": "Name of this alert, which will be sent as subject",
+                          "type": "string"
+                        },
+                        "type": {
+                          "description": "Type of the alert (types: \"uptime\", \"logs\", \"storage\")",
+                          "enum": ["uptime"],
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "type": "object"
+                    },
+                    {
+                      "properties": {
+                        "name": {
+                          "description": "Name of this alert, which will be sent as subject",
+                          "type": "string"
+                        },
+                        "regex": {
+                          "description": "Regex to search for in logs",
+                          "type": "string"
+                        },
+                        "type": {
+                          "description": "Type of the alert (types: \"uptime\", \"logs\", \"storage\")",
+                          "enum": ["logs"],
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "type": "object"
+                    },
+                    {
+                      "properties": {
+                        "name": {
+                          "description": "Name of this alert, which will be sent as subject",
+                          "type": "string"
+                        },
+                        "threshold": {
+                          "description": "Maximum percentage on which alert will be triggered (e.g. 75%)",
+                          "type": "number"
+                        },
+                        "type": {
+                          "description": "Type of the alert (types: \"uptime\", \"logs\", \"storage\")",
+                          "enum": ["storage"],
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "type": "object"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              "webhook": {
+                "description": "Webhook to send alert to (!! CURRENTLY, NOT AVAILABLE !!)",
+                "type": "string"
+              }
+            },
+            "required": ["name", "policies"],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "concurrencyPolicy": {
+          "description": "CronJob concurrency policy setting; default is 'Allow' (see: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/#concurrency-policy)",
+          "enum": ["Allow", "Forbid", "Replace"],
+          "type": "string"
+        },
+        "database": {
+          "description": "Database setup (following envs will be added to your app: \"DATABASE_ADDRESS\" - IP:PORT // \"DATABASE_USER\" // \"DATABASE_PASSWORD\")",
+          "properties": {
+            "existingName": {
+              "description": "Add application name of existing database (without type \"-postgres\"/\"-elasticsearch\"!)",
+              "type": "string"
+            },
+            "frontend": {
+              "description": "Whether to setup up a frontend (grafana/kibana)",
+              "type": "boolean"
+            },
+            "size": {
+              "description": "Database size in Gigabyte",
+              "type": "number"
+            },
+            "type": {
+              "description": "Type of database (elasticsearch/postgres)",
+              "enum": ["elasticsearch", "postgresql"],
+              "type": "string"
+            }
+          },
+          "required": ["type"],
+          "type": "object"
+        },
+        "inSecure": {
+          "description": "If toggle is true, no basic auth is required",
+          "type": "boolean"
+        },
+        "livenessProbe": {
+          "description": "Failing liveness probe will restart the container",
+          "properties": {
+            "exec": {
+              "description": "Execute a command to check your containers health",
+              "properties": {
+                "command": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "description": "E.g.: \"curl 'someendpoint.com'\""
+                }
+              },
+              "required": ["command"],
+              "type": "object"
+            },
+            "failureThreshold": {
+              "description": "How many failed probes until container will shut down",
+              "type": "number"
+            },
+            "httpGet": {
+              "description": "HTTP GET request for checking your app status",
+              "properties": {
+                "httpHeaders": {
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["name", "value"],
+                  "type": "object"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                }
+              },
+              "required": ["path", "port"],
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "description": "Initial delay before triggering probe",
+              "type": "number"
+            },
+            "periodSeconds": {
+              "description": "How often (in seconds) this probe should run",
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "persistentBucket": {
+          "description": "Name of an existing bucket, to get persistence layer (accessible via env: \"VOLUME_MOUNT\" - default is \"/data/storage\")",
+          "type": "string"
+        },
+        "persistentVolume": {
+          "description": "Persistent volume configs (accessible via env \"VOLUME_MOUNT\" - default is \"/data/storage\")",
+          "properties": {
+            "existingName": {
+              "description": "Use an existing name of a volume (application name without type \"-volume\"!)",
+              "type": "string"
+            },
+            "mountPath": {
+              "description": "Where to mount / access your volume (\"/data/storage\")",
+              "type": "string"
+            },
+            "preInit": {
+              "description": "Whether to first init volume before deploy application (to prefill volume beforehand)",
+              "type": "boolean"
+            },
+            "shared": {
+              "description": "Creates a NFS volume with web-ui, which can be accessed by multiple applications. Non-shared volumes just can be mounted by ONE application.",
+              "type": "boolean"
+            },
+            "size": {
+              "description": "Volume size in Gigabyte",
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "projectName": {
+          "description": "The projectName is the external presentation name (e.g. for your URL)",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "description": "Failing readiness probe will stop your application from serving traffic, so it won't be ready until it succeeds",
+          "properties": {
+            "exec": {
+              "description": "Execute a command to check your containers health",
+              "properties": {
+                "command": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "description": "E.g.: \"curl 'someendpoint.com'\""
+                }
+              },
+              "required": ["command"],
+              "type": "object"
+            },
+            "failureThreshold": {
+              "description": "How many failed probes until container will shut down",
+              "type": "number"
+            },
+            "httpGet": {
+              "description": "HTTP GET request for checking your app status",
+              "properties": {
+                "httpHeaders": {
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["name", "value"],
+                  "type": "object"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                }
+              },
+              "required": ["path", "port"],
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "description": "Initial delay before triggering probe",
+              "type": "number"
+            },
+            "periodSeconds": {
+              "description": "How often (in seconds) this probe should run",
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "regName": {
+          "description": "Name of image registry repo",
+          "enum": ["cloud-deploy-images", "kubeflow-pipeline-images"],
+          "type": "string"
+        },
+        "replicas": {
+          "description": "Scale your application (default is 1 serving pod)",
+          "type": "number"
+        },
+        "resources": {
+          "description": "Resources reservations, for requesting more memory or cpu",
+          "properties": {
+            "cpu": {
+              "description": "CPU setting. Use decimals ( 1.5 = \"one and a half cpu\"), see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu",
+              "type": "number"
+            },
+            "memory": {
+              "description": "Memory setting. Use strings with appended \"Gi\" or \"Mi\", see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory",
+              "type": "string"
+            },
+            "nvidia.com/gpu": {
+              "description": "GPU setting (set to 1 to use gpu machine!)",
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "schedule": {
+          "description": "CronJob schedule setting (see: https://crontab.guru/)",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of deployment (service/job/website/image) / Jobs will be auto-deleted after crash or finish",
+          "enum": ["cronjob", "image", "job", "service", "website"],
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "type": "object"
+    }
+  },
+  "required": ["isEnabled", "settings"],
+  "type": "object"
+}

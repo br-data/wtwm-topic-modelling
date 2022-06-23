@@ -1,0 +1,15 @@
+isEnabled: false
+image:
+  preset: node
+build:
+  command: yarn
+run:
+  command: sleep 1h
+  envs:
+    - name: TEST
+      value: my-test
+settings:
+  type: service
+  persistentVolume:
+    mountPath: /data/test
+    size: 1
