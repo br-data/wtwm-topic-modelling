@@ -7,12 +7,15 @@ from enum import Enum
 
 class SourceLabel(Enum):
     """Fix source labels"""
+
     BR = "br"
     MDR = "mdr"
 
 
 class Comment:
-    def __init__(self, text: str, article_id: str, embed: Any, source_label: SourceLabel) -> None:
+    def __init__(
+        self, text: str, article_id: str, embed: Any, source_label: SourceLabel
+    ) -> None:
         """Init method.
 
         :param text: comment message
