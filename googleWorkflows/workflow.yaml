@@ -1,0 +1,47 @@
+- br-coral-talk-call:
+    call: http.get
+    args:
+        url: https://comments.br24.de/query=somequery
+        body:
+            input: ${br-credentials}
+    result: comments_data_br
+- mdr-coral-talk-call:
+    call: http.get
+    args:
+        url: https://kommentare.mdr.de/query=somequery
+        body:
+            input: ${mdr-credentials}
+    result: comments_data_mdr
+- load-br-data:
+    call: http.post
+    args:
+        url: https://wtwm-topic-modelling.interaktiv.br.de/load
+        body:
+            input: ${comments_data_br}
+- load-mdr-data:
+    call: http.post
+    args:
+        url: https://wtwm-topic-modelling.interaktiv.br.de/load
+        body:
+            input: ${comments_data_mdr}
+- preprocess-data:
+    call: http.get
+    args:
+        url: https://wtwm-topic-modelling.interaktiv.br.de/preprocess
+- re-train:
+    call: http.get
+    args:
+        url: https://wtwm-topic-modelling.interaktiv.br.de/retrain
+- infere-mentions:
+    call: http.post
+    args:
+        url: https://wtwm-topic-modelling.interaktiv.br.de/infere
+        body:
+            input: ${comments_data}
+    result: probably_not_neccesary
+- push-notifications:
+    call: http.post
+    args:
+        url: https://wtwm-topic-modelling.interaktiv.br.de/notify
+        body:
+            input: ${comments_data}

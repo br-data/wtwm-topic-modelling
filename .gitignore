@@ -108,3 +108,9 @@ dist
 !.idea/jsonSchemas.xml
 .vscode/*
 !.vscode/settings.json
+
+#virtual enviroment
+venv/
+
+#Mac Files
+*.DS_Store

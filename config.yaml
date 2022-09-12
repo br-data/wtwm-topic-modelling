@@ -1,13 +1,21 @@
 isEnabled: false
 image:
-  preset: node
+  preset: python
 build:
   command: yarn
 run:
-  command: sleep 1h
+  command: python run_example.py
   envs:
-    - name: TEST
-      value: my-test
+    - name: STAGE
+      value: develop
+    - name: HOST
+      value: 0.0.0.0
+    - name: NAME
+      value: wtwm-topic-modelling
+    - name: PORT
+      value: '3000'
+    - name: URL
+      value: https://www.wtwm-topic-modelling.interaktiv.br.de/
 settings:
   type: service
   persistentVolume:
