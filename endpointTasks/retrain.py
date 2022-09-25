@@ -1,78 +1,87 @@
 '''trains an NLP classifier to detect direct mentions of a given entity in a given text'''
+# I would like to give credit to the following article for the code in this file:
+# https://www.machinelearningplus.com/nlp/training-custom-ner-model-in-spacy/
 
-import sys
+# in this first version I make use of the pre-trained german model:
+# python -m spacy download de_core_news_sm
+
 import os
 import json
 import random
 import spacy
 from spacy.util import minibatch, compounding
-from spacy.scorer import Scorer
-from spacy.gold import GoldParse
-from spacy.tokens import DocBin
 from spacy.training.example import Example
-from spacy.tokens import Doc
-from spacy.vocab import Vocab
 from spacy.training import Example
 
 class TrainDirectMentionModel:
-    '''trains an NLP classifier to detect direct mentions of a given entity in a given text'''
+    '''trains an NLP classifier to detect direct mentions in a given text'''
 
     def __init__(self):
         '''class constructor'''
         pass
 
-    def train(self, json_data):
+    def load_data(self):
+        '''load training data contained in the data/ directory'''
+
+        training_data = []
+        for filename in os.listdir(os.path.abspath('.') + '/data'):
+            with open('data/' + filename, 'r', encoding='utf-8') as f:
+                for line in f:
+                    training_data.append(json.loads(line.rstrip('\n|\r')))
+        
+        # return a list of tuples containing the text and the annotations if the "spans" key exists
+        return [(x['text'], {'entities': [(y['start'], y['end'], y['label']) for y in x['spans']]}) for x in training_data if 'spans' in x]
+
+    def train(self, train_data):
         '''trains an NLP classifier to detect direct mentions of a given entity in a given text'''
 
-        print('train direct mention model')
+        nlp = spacy.load('de_core_news_sm')
 
-        # create a blank NLP model
-        nlp = spacy.blank('en')
+        ner = nlp.get_pipe("ner")
 
-        # create a blank entity recognizer and add it to the pipeline
-        ner = nlp.create_pipe('ner')
-        nlp.add_pipe(ner, last=True)
+        for _, annotations in train_data:
+            for ent in annotations.get("entities"):
+                ner.add_label(ent[2])
 
-        # add the entity label to the entity recognizer
-        ner.add_label('DIRECT_MENTION')
+        # disable other pipes
+        pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
+        unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
 
-        # get names of other pipes to disable them during training
-        other_pipes = [pipe for pipe in nlp.pipe_names if pipe != 'ner']
+        with nlp.disable_pipes(*unaffected_pipes):
 
-        # only train NER
-        with nlp.disable_pipes(*other_pipes):
+            # Training for 30 iterations
+            for iteration in range(30):
 
-            # reset and initialize the weights randomly – but only if we're
-            # training a new model
-            nlp.begin_training()
-
-            # train for 30 iterations
-            for itn in range(30):
-
-                # shuffle the training data
-                random.shuffle(json_data)
-
-                # batch up the examples using spaCy's minibatch
-                batches = minibatch(json_data, size=compounding(4.0, 32.0, 1.001))
+                # shuufling examples  before every iteration
+                random.shuffle(train_data)
                 losses = {}
-
-                # iterate through minibatches
+                # batch up the examples using spaCy's minibatch
+                batches = minibatch(train_data, size=compounding(4.0, 32.0, 1.001))
                 for batch in batches:
-                    for text, annotations in batch:
-
-                        # create Example
-                        doc = nlp.make_doc(text)
-                        example = Example.from_dict(doc, annotations)
-
-                        # update the model
-                        nlp.update([example], losses=losses, drop=0.5)
-
-                print('Losses', losses)
+                    texts, annotations = zip(*batch)
+                    example = []
+                    # Update the model with iterating each text
+                    for i in range(len(texts)):
+                        doc = nlp.make_doc(texts[i])
+                        example.append(Example.from_dict(doc, annotations[i]))
+                    
+                    # Update the model
+                    nlp.update(example, drop=0.5, losses=losses)
 
         # save model to output directory
-        if not os.path.exists('output'):
-            os.makedirs('output')
 
-        nlp.to_disk('output')
+        nlp.to_disk(os.path.abspath('.') + '/models')
 
         print('model saved')
+
+
+if __name__ == '__main__':
+
+    # create an instance of the class
+    trainDirectMentionModel = TrainDirectMentionModel()
+
+    # load the training data
+    json_data = trainDirectMentionModel.load_data()
+
+    # train the model
+    trainDirectMentionModel.train(json_data)

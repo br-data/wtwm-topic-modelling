@@ -114,3 +114,12 @@ venv/
 
 #Mac Files
 *.DS_Store
+
+# credentials
+journalismai-362410-4c356dce1229.json
+
+# heavy files folders
+data/
+models/
+
+
