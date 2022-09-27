@@ -12,6 +12,7 @@ import spacy
 from spacy.util import minibatch, compounding
 from spacy.training.example import Example
 from spacy.training import Example
+from spacy.scorer import Scorer
 
 class TrainDirectMentionModel:
     '''trains an NLP classifier to detect direct mentions in a given text'''
@@ -82,6 +83,41 @@ class TrainDirectMentionModel:
 
         print('model saved')
 
+    def predict(self, model, text):
+        '''predicts the entities in a given text'''
+
+        doc = model(text)
+
+        predictions = []
+        print(text)
+        for ent in doc.ents:
+            p = (ent.text, {'entities': [(ent.start, ent.end, 'MENTION')]})
+
+            predictions.append(p)
+            print(p)
+
+        return predictions
+
+    def evaluate_predictions(self, model, test_data):        
+        # test_data = [('MDR lebt einfach damit das ihr und die Politiker Widerspruch kriegen.', {'entities': [(0, 3, 'MENTION')]})]
+        examples = []
+        for text, annots in test_data:
+            doc = model.make_doc(text)
+            examples.append(Example.from_dict(doc, annots))
+
+        print(examples)
+
+    def score_predictions(self, model, test_data):
+        scorer = Scorer()
+        examples = []
+        for text, annotations in test_data:
+            doc = model.make_doc(text)
+            example = Example.from_dict(doc, annotations)
+            example.predicted = model(str(example.predicted))
+            examples.append(example)
+        scorer.score(examples)
+
+        print(scorer.score(examples))
 
 if __name__ == '__main__':
 
@@ -97,4 +133,10 @@ if __name__ == '__main__':
     # train the model
     trainDirectMentionModel.train(train_data)
 
-    # test the model
+    # load the model
+    direct_mention_model = spacy.load('./models')
+
+    # check the predictions
+    # trainDirectMentionModel.evaluate_predictions(direct_mention_model, test_data)
+
+    trainDirectMentionModel.score_predictions(direct_mention_model, test_data)
