@@ -28,9 +28,19 @@ class TrainDirectMentionModel:
             with open('data/' + filename, 'r', encoding='utf-8') as f:
                 for line in f:
                     training_data.append(json.loads(line.rstrip('\n|\r')))
-        
+
         # return a list of tuples containing the text and the annotations if the "spans" key exists
-        return [(x['text'], {'entities': [(y['start'], y['end'], y['label']) for y in x['spans']]}) for x in training_data if 'spans' in x]
+        data = [(x['text'], {'entities': [(y['start'], y['end'], y['label']) for y in x['spans']]}) for x in training_data if 'spans' in x]
+        return data
+
+    def split_data(self, data, split=80):
+        '''shuffles and splits the data in a train and test set based on the split proportion in percent'''
+        random.shuffle(data)
+        idx = int(len(data)/100 * split)
+        train_data = data[:idx]
+        test_data = data[idx:]
+        return train_data, test_data
+
 
     def train(self, train_data):
         '''trains an NLP classifier to detect direct mentions of a given entity in a given text'''
@@ -52,8 +62,6 @@ class TrainDirectMentionModel:
             # Training for 30 iterations
             for iteration in range(30):
 
-                # shuufling examples  before every iteration
-                random.shuffle(train_data)
                 losses = {}
                 # batch up the examples using spaCy's minibatch
                 batches = minibatch(train_data, size=compounding(4.0, 32.0, 1.001))
@@ -64,7 +72,7 @@ class TrainDirectMentionModel:
                     for i in range(len(texts)):
                         doc = nlp.make_doc(texts[i])
                         example.append(Example.from_dict(doc, annotations[i]))
-                    
+
                     # Update the model
                     nlp.update(example, drop=0.5, losses=losses)
 
@@ -83,5 +91,10 @@ if __name__ == '__main__':
     # load the training data
     json_data = trainDirectMentionModel.load_data()
 
+    # split the data
+    train_data, test_data = trainDirectMentionModel.split_data(json_data, split=80)
+
     # train the model
-    trainDirectMentionModel.train(json_data)
+    trainDirectMentionModel.train(train_data)
+
+    # test the model
