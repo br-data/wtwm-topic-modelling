@@ -1,10 +1,11 @@
 from fastapi import FastAPI
+from endpointTasks.load_data import LoadData
 
 app = FastAPI()
 
 @app.post("/load/")
-def load_data():
-    return {"Hello": "World"}
+def load_data(json_file: str, table_id: str):
+    LoadData.load_data(json_file, table_id)
 
 @app.post("/preprocess/")
 def preprocess_data():

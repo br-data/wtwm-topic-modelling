@@ -21,11 +21,11 @@ class TrainDirectMentionModel:
         '''class constructor'''
         pass
 
-    def load_data(self):
+    def load_prodigy_data(self):
         '''load training data contained in the data/ directory'''
 
         training_data = []
-        for filename in os.listdir(os.path.abspath('.') + '/data'):
+        for filename in os.listdir(os.path.abspath('.') + '/data/prodigy'):
             with open('data/' + filename, 'r', encoding='utf-8') as f:
                 for line in f:
                     training_data.append(json.loads(line.rstrip('\n|\r')))
@@ -61,7 +61,7 @@ class TrainDirectMentionModel:
         with nlp.disable_pipes(*unaffected_pipes):
 
             # Training for 30 iterations
-            for iteration in range(30):
+            for iteration in range(50):
 
                 losses = {}
                 # batch up the examples using spaCy's minibatch
@@ -79,7 +79,7 @@ class TrainDirectMentionModel:
 
         # save model to output directory
 
-        nlp.to_disk(os.path.abspath('.') + '/models')
+        nlp.to_disk(os.path.abspath('.') + '/models/detect_mentions')
 
         print('model saved')
 
@@ -131,10 +131,10 @@ if __name__ == '__main__':
     train_data, test_data = trainDirectMentionModel.split_data(json_data, split=80)
 
     # train the model
-    trainDirectMentionModel.train(train_data)
+    # trainDirectMentionModel.train(train_data)
 
     # load the model
-    direct_mention_model = spacy.load('./models')
+    direct_mention_model = spacy.load('./models/detect_mentions')
 
     # check the predictions
     # trainDirectMentionModel.evaluate_predictions(direct_mention_model, test_data)
