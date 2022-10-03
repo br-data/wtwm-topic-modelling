@@ -116,7 +116,7 @@ venv/
 *.DS_Store
 
 # credentials
-journalismai-362410-4c356dce1229.json
+.credentials/
 
 # heavy files folders
 data/
