@@ -29,7 +29,6 @@ run:
       value: "model/detect_mentions/"
     - name: ORIGINS
       value: sm://{{.projectId}}/Origins
-
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
