@@ -1,15 +1,35 @@
-isEnabled: false
+isEnabled: true
 image:
-  preset: node
+  imageFrom: ubuntu:20.04
 build:
-  command: yarn
+  command: "TZ=Europe/Berlin \
+            && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+            && echo $TZ > /etc/timezone \
+            && apt-get -y update \
+            && apt-get -y install locales \
+            && sed -i -e 's/# de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/' /etc/locale.gen \
+            && locale-gen \
+            && apt-get -y install python3.9 python3.9-venv \
+            && mkdir /opt/venv
+            && python3.9 -m venv /opt/venv
+            && /opt/venv/bin/python3.9 -m pip install --upgrade pip \
+            && /opt/venv/bin/python3.9 -m pip install -r requirements.txt"
 run:
-  command: sleep 1h
+  command: /opt/venv/bin/python3.9 -m uvicorn api:app --host 0.0.0.0 --port 3000
   envs:
-    - name: TEST
-      value: my-test
+    - name: LC_ALL
+      value: "de_DE.UTF-8"
+    - name: LANG
+      value: "de_DE.UTF-8"
+    - name: LANGUAGE
+      value: "de_DE.UTF-8"
+    - name: TZ
+      value: "CET"
+    - name: MODEL_PATH
+      value: "model/detect_mentions/"
+    - name: ORIGINS
+      value: sm://{{.projectId}}/Origins
+
 settings:
   type: service
-  persistentVolume:
-    mountPath: /data/test
-    size: 1
+  persistentBucket: wtwm-data-bucket
