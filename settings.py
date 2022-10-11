@@ -14,4 +14,3 @@ except (KeyError, TypeError):
 # if deployed on server
 BUCKET_PATH = os.environ.get("VOLUME_PATH", "")
 MODEL_PATH = f"{BUCKET_PATH}{_MODEL_PATH}"
-
