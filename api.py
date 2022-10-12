@@ -5,7 +5,7 @@ import uvicorn
 
 import spacy
 
-from src.api.response_models import ExtractorResponse, ModelReloadResponse, ErrorCode
+from src.api.response_models import ExtractorResponse, ErrorCode, BaseResponse
 from src.api.request_models import ExtractorRequestBody
 from src.extract import extract_mentions_from_text
 from settings import MODEL_PATH
@@ -53,8 +53,22 @@ async def find_mentions(body: ExtractorRequestBody) -> ExtractorResponse:
     return ExtractorResponse(status="ok", msg=msg, result=result)
 
 
+@APP.get("/v1/get_mdr_comments", response_model=BaseResponse)
+def update_comments_from_mdr() -> None:
+    """Get comments from mdr source, store them in the bucket and db."""
+    #raw_comments = get_raw_comments_from_mdr()
+    # get new new comments from mdr
+    # save comments to file in standard comment format
+    #write_comments_to_bucket(path, comments)
+    # raw_comments = load_comments_from_bucket(path)
+    #comments = preprocess_mdr_comments(raw_comments)
+    #_write_data_to_database(comments)
+    comments = []
+    msg = f"Got, stored and wrote {len(comments)} comments."
+    return BaseResponse(status="ok", msg=msg)
 
-@APP.get("/v1/reload_model", response_model=ModelReloadResponse)
+
+@APP.get("/v1/reload_model", response_model=BaseResponse)
 def reload_model() -> None:
     """Reload a model from the bucket into this running API."""
     try:
@@ -63,7 +77,7 @@ def reload_model() -> None:
         msg = f"Couldn't find the model at: '{MODEL_PATH}' because '{exc}'"
         raise HTTPException(status_code=ErrorCode.MODEL_NOT_FOUND.value, detail=msg)
     else:
-        return ModelReloadResponse(status="ok", msg=f"Successfully reloaded model '{MODEL_PATH}'")
+        return BaseResponse(status="ok", msg=f"Successfully reloaded model '{MODEL_PATH}'")
 
 
 if __name__ == "__main__":

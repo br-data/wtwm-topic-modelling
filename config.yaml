@@ -27,6 +27,10 @@ run:
       value: "CET"
     - name: MODEL_PATH
       value: "/data/storage/detect_mentions/"
+    - name: MDR_COMMENT_ENDPOINT_TOKEN
+      value: sm://{{.projectId}}/wtwm-mdr-comment-endpoint-token
+    - name: MDR_COMMENT_ENDPOINT
+      value: sm://{{.projectId}}/wtwm-mdr-comment-endpoint
 settings:
   type: service
   persistentBucket: wtwm-data-bucket

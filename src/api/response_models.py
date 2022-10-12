@@ -7,12 +7,10 @@ class ErrorCode(Enum):
     MODEL_NOT_FOUND = 404
 
 
-class ExtractorResponse(BaseModel):
+class BaseResponse(BaseModel):
     status: str
     msg: str
+
+
+class ExtractorResponse(BaseResponse):
     result: list[ExtractorResult]
-
-
-class ModelReloadResponse(BaseModel):
-    status: str
-    msg: str
