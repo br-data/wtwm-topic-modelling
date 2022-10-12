@@ -5,6 +5,14 @@ try:
     ORIGINS = json.loads(os.environ["ORIGINS"])
 except (KeyError, TypeError):
     raise ValueError("Missing environment variable: 'ORIGINS'")
+else:
+    if ORIGINS is None:
+        ORIGINS = [
+            "https://interaktiv.brdata-dev.de",
+            "https://interaktiv.br.de",
+            "http://0.0.0.0:3000",
+            "http://localhost",
+        ]
 
 try:
     _MODEL_PATH = os.environ["MODEL_PATH"]
