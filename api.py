@@ -10,6 +10,7 @@ from src.api.request_models import ExtractorRequestBody
 from src.extract import extract_mentions_from_text
 from settings import ORIGINS, MODEL_PATH
 
+
 SPACY_MODEL = spacy.load(MODEL_PATH)
 APP = FastAPI(
     title="WTWM mention extractor",
