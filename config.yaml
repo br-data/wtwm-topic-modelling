@@ -27,8 +27,6 @@ run:
       value: "CET"
     - name: MODEL_PATH
       value: "model/detect_mentions/"
-    - name: ORIGINS
-      value: "sm://{{.projectId}}/origins"
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
