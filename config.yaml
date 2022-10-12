@@ -15,7 +15,7 @@ build:
             && /opt/venv/bin/python3.9 -m pip install --upgrade pip \
             && /opt/venv/bin/python3.9 -m pip install -r requirements.txt"
 run:
-  command: /opt/venv/bin/python3.9 -m uvicorn api:app --host 0.0.0.0 --port 3000
+  command: sleep 500
   envs:
     - name: LC_ALL
       value: "de_DE.UTF-8"
