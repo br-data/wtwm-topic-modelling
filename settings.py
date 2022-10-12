@@ -2,7 +2,7 @@ import os
 import json
 
 try:
-    ORIGINS = json.loads(os.environ["ORIGINS"])
+    ORIGINS = os.environ["ORIGINS"]
 except (KeyError, TypeError):
     raise ValueError("Missing environment variable: 'ORIGINS'")
 else:
@@ -13,6 +13,8 @@ else:
             "http://0.0.0.0:3000",
             "http://localhost",
         ]
+    else:
+        ORIGINS = json.loads(ORIGINS)
 
 try:
     _MODEL_PATH = os.environ["MODEL_PATH"]
