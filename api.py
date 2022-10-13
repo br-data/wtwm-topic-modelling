@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import uvicorn
+from datetime import datetime
 
 import spacy
 
@@ -10,8 +11,8 @@ from src.api.request_models import ExtractorRequestBody
 from src.models import Comment
 from src.tools import write_jsonlines_to_bucket
 from src.extract import extract_mentions_from_text
-from settings import MODEL_PATH, BACKUP_PATH
-
+from src.storage.big_query import BigQueryWriter
+from settings import MODEL_PATH, BACKUP_PATH, TABLE_ID
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
 APP = FastAPI(
@@ -62,14 +63,17 @@ def update_comments_from_mdr() -> None:
     # TODO
     #raw_comments = get_raw_comments_from_mdr()
     raw_comments = [Comment.dummy()]
-    write_jsonlines_to_bucket(BACKUP_PATH, [c.as_dict() for c in raw_comments])
-    # save comments to file in standard comment format
-    #write_comments_to_bucket(path, comments)
+    # save raw comments as backup
+    file_path = BACKUP_PATH + f"{datetime.now().isoformat()}_comment_backup.jsonl"
+    write_jsonlines_to_bucket(file_path, [c.as_dict() for c in raw_comments])
+    # TODO
     # raw_comments = load_comments_from_bucket(path)
+    # TODO when building 'get_raw_comments_from_mdr()'
     #comments = preprocess_mdr_comments(raw_comments)
-    #_write_data_to_database(comments)
-    comments = []
-    msg = f"Got, stored and wrote {len(raw_comments)} comments."
+    comments = raw_comments
+    writer = BigQueryWriter()
+    writer.write_file(file_path, TABLE_ID)
+    msg = f"Got, stored and wrote {len(comments)} comments."
     return BaseResponse(status="ok", msg=msg)
 
 

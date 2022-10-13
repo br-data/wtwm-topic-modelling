@@ -8,8 +8,7 @@ def write_jsonlines_to_bucket(path: str, lines: list[dict]) -> None:
     :param path: path to data folder
     :param lines: content to write to file
     """
-    file_path = path + f"{datetime.now().isoformat()}_comment_backup.jsonl"
-    with jsonlines.open(file_path, "w") as handle:
+    with jsonlines.open(path, "w") as handle:
         for line in lines:
             handle.write(line)
 
