@@ -27,6 +27,8 @@ run:
       value: "CET"
     - name: MODEL_PATH
       value: "/data/storage/detect_mentions/"
+    - name: BACKUP_PATH
+      value: "/data/storage/backup/"
     - name: MDR_COMMENT_ENDPOINT_TOKEN
       value: sm://{{.projectId}}/wtwm-mdr-comment-endpoint-token
     - name: MDR_COMMENT_ENDPOINT
