@@ -8,11 +8,12 @@ from src.tools import request
 
 class MDRCommentGetter(BaseModel):
     """Get comment from mdr comment endpoint."""
+
     url: str = MDR_COMMENT_ENDPOINT
     token: str = MDR_COMMENT_ENDPOINT_TOKEN
 
     def get_comments(
-            self, from_: datetime, to: datetime, size: int = 20, page: int = 1
+        self, from_: datetime, to: datetime, size: int = 20, page: int = 1
     ) -> list[dict[str, Union[int, list[dict[str, Union[str, int]]]]]]:
         """Get commens for a specified timeframe.
 
@@ -27,7 +28,7 @@ class MDRCommentGetter(BaseModel):
         return response["items"]
 
     def _get_filter(
-            self, from_: datetime, to: datetime, size: int = 20, page: int = 1
+        self, from_: datetime, to: datetime, size: int = 20, page: int = 1
     ) -> dict:
         """Assemble filter for call of comment api for a specific timeframe.
 
@@ -38,10 +39,16 @@ class MDRCommentGetter(BaseModel):
         """
         return {
             "filter": {
-                "must": [{"date_range": {"created_at": {
-                    "from": from_.strftime("%Y-%m-%y %H:%M:%S"),
-                    "to": to.strftime("%Y-%m-%y %H:%M:%S")
-                }}}]
+                "must": [
+                    {
+                        "date_range": {
+                            "created_at": {
+                                "from": from_.strftime("%Y-%m-%y %H:%M:%S"),
+                                "to": to.strftime("%Y-%m-%y %H:%M:%S"),
+                            }
+                        }
+                    }
+                ]
             },
             "sort": "-created_at",
             "size": size,

@@ -21,5 +21,5 @@ def preprocess_mdr_comment(raw: dict[str, Any]) -> dict[str, Any]:
         "created_at": parse(raw["created_at"]),
         "last_updated_at": datetime.now(),
         "mentions": None,
-        "media_house": MediaHouse.MDR
+        "media_house": MediaHouse.MDR,
     }

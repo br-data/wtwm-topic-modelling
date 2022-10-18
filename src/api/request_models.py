@@ -21,10 +21,10 @@ class MDRUpdateRequest(BaseModel):
             description="'From' timestamp for timerange (iso 8601)",
         ),
         to: Optional[str] = Query(
-            datetime.now().isoformat(),   # example value
+            datetime.now().isoformat(),  # example value
             title="To",
             description="'To' timestamp for timerange (iso 8601)",
-        )
+        ),
     ) -> dict[str, str]:
         """Define api query parameters.
 
@@ -35,7 +35,7 @@ class MDRUpdateRequest(BaseModel):
         return {"from": from_, "to": to}
 
     @classmethod
-    def from_query(cls,  query: dict[str, Any]) -> "MDRUpdateRequest":
+    def from_query(cls, query: dict[str, Any]) -> "MDRUpdateRequest":
         """Init from api arguments.
 
         :param query: api path query as dict

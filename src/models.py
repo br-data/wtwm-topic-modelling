@@ -12,8 +12,6 @@ class Status(Enum):
     TO_BE_EVALUATED = "UNPROCESSED"
 
 
-
-
 class MediaHouse(Enum):
     MDR = "mdr"
     BR = "br"

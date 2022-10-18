@@ -60,7 +60,9 @@ async def find_mentions(body: ExtractorRequestBody) -> ExtractorResponse:
 
 
 @APP.get("/v1/get_mdr_comments", response_model=BaseResponse)
-def update_comments_from_mdr(query: dict[str, Any] = Depends(MDRUpdateRequest.query_template)) -> None:
+def update_comments_from_mdr(
+    query: dict[str, Any] = Depends(MDRUpdateRequest.query_template)
+) -> None:
     """Get comments from mdr source, store them in the bucket and db."""
     config = MDRUpdateRequest.from_query(query)
     get_comments = MDRCommentGetter()
@@ -84,33 +86,33 @@ def update_comments_from_mdr(query: dict[str, Any] = Depends(MDRUpdateRequest.qu
     return BaseResponse(status="ok", msg=msg)
 
 
-#@APP.post("/v1/update_comments_from_br")
-#def update_comments_from_br() -> None:
+# @APP.post("/v1/update_comments_from_br")
+# def update_comments_from_br() -> None:
 #    raw_comments = get_raw_comments_from_br()
 #    write_comments_to_bucket(path, raw_comments)
 #    #raw_comments = load_comments_from_bucket(path)
 #    comments = preprocess_br_comments(raw_comments)
 #    _write_data_to_database(comments)
 #
-#@APP.post("/v1/to_database")
-#def write_data_to_database(*args, **kwargs) -> None:
+# @APP.post("/v1/to_database")
+# def write_data_to_database(*args, **kwargs) -> None:
 #    """Take the comments and write them to big query."""
 #    comments = process request(*args, **kwargs)
 #    _write_data_to_database(file_buff.behave_like_a_file())
 #
 #
-#def _write_data_to_database(comments):
+# def _write_data_to_database(comments):
 #    file_buff = io(comments)
 #    # do write
 #
-#@APP.post("/v1/update_db")
-#def update_db(*args, **kwargs) -> None:
+# @APP.post("/v1/update_db")
+# def update_db(*args, **kwargs) -> None:
 #    # comments = get new comments from db
 #    # find_mentions(comments)
 #    # update_comments_in_db(comments)
 #
-#@APP.post("/v1/send_comments_to_teams")
-#def send_comments_to_teams(*args, **kwargs) -> None:
+# @APP.post("/v1/send_comments_to_teams")
+# def send_comments_to_teams(*args, **kwargs) -> None:
 #    # unsend = get_unsend_comments_from_db()
 #    # response = send_comments_to_teams(unsend)
 #    # sent = []
@@ -121,8 +123,8 @@ def update_comments_from_mdr(query: dict[str, Any] = Depends(MDRUpdateRequest.qu
 #
 #    # update_comments_in_db(sent)
 
-#@APP.post("/v1/generate_train_corpus")
-#def generate_train_corpus() -> None:
+# @APP.post("/v1/generate_train_corpus")
+# def generate_train_corpus() -> None:
 #    pass
 
 
