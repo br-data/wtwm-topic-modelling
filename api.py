@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
@@ -134,7 +135,9 @@ def reload_model() -> None:
         msg = f"Couldn't find the model at: '{MODEL_PATH}' because '{exc}'"
         raise HTTPException(status_code=ErrorCode.MODEL_NOT_FOUND.value, detail=msg)
     else:
-        return BaseResponse(status="ok", msg=f"Successfully reloaded model '{MODEL_PATH}'")
+        return BaseResponse(
+            status="ok", msg=f"Successfully reloaded model '{MODEL_PATH}'"
+        )
 
 
 if __name__ == "__main__":

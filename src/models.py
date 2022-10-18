@@ -43,7 +43,7 @@ class ExtractorResult(BaseModel):
             start=self.start,
             offset=self.offset,
             label=self.label,
-            extracted_from=self.extracted_from.value
+            extracted_from=self.extracted_from.value,
         )
 
 
@@ -79,7 +79,7 @@ class Comment(BaseModel):
                     start=0,
                     offset=16,
                     label="mention",
-                    extracted_from=ExtractionType.SPACY_MODEL_A
+                    extracted_from=ExtractionType.SPACY_MODEL_A,
                 )
             ],
             media_house=MediaHouse.MDR,
