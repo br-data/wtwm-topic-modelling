@@ -4,9 +4,14 @@ from typing import Optional, Union
 
 from enum import Enum
 
+
 class Status(Enum):
     ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
+    TO_BE_PROCESSED = "UNPROCESSED"
+    TO_BE_EVALUATED = "UNPROCESSED"
+
+
 
 
 class MediaHouse(Enum):
@@ -16,7 +21,7 @@ class MediaHouse(Enum):
 
 class ExtractionType(Enum):
     ANNOTATION = "annotation"
-    #TODO
+    # TODO
     SPACY_MODEL_A = "spacy_model_name"
 
 
@@ -49,10 +54,10 @@ class Comment(BaseModel):
     asset_id: str  # article id the comment belongs to
     asset_url: str  # article url the comment belongs to
     author_id: str  # comment author
-    username: str   # technical name of the comment author
+    username: str  # technical name of the comment author
     created_at: datetime
     last_updated_at: datetime  # meant as database update of this comment
-    mentions: list[Optional[ExtractorResult]]
+    mentions: Optional[list[Optional[ExtractorResult]]]
     media_house: MediaHouse
 
     @classmethod
@@ -77,10 +82,15 @@ class Comment(BaseModel):
                     extracted_from=ExtractionType.SPACY_MODEL_A
                 )
             ],
-            media_house=MediaHouse.MDR
+            media_house=MediaHouse.MDR,
         )
 
     def as_dict(self) -> dict[str, Union[str, dict[str, Union[str, int]]]]:
+        if self.mentions is not None:
+            mentions = [m.as_dict() for m in self.mentions]
+        else:
+            mentions = None
+
         return dict(
             id=self.id,
             status=self.status.value,
@@ -91,6 +101,6 @@ class Comment(BaseModel):
             username=self.username,
             created_at=self.created_at.isoformat(),
             last_updated_at=self.last_updated_at.isoformat(),
-            mentions=[m.as_dict() for m in self.mentions],
-            media_house=self.media_house.value
+            mentions=mentions,
+            media_house=self.media_house.value,
         )

@@ -7,11 +7,13 @@ from datetime import datetime
 import spacy
 
 from src.api.response_models import ExtractorResponse, ErrorCode, BaseResponse
-from src.api.request_models import ExtractorRequestBody
+from src.api.request_models import ExtractorRequestBody, MDRUpdateRequest
 from src.models import Comment
 from src.tools import write_jsonlines_to_bucket
 from src.extract import extract_mentions_from_text
 from src.storage.big_query import BigQueryWriter
+from src.mdr.get_comments import MDRCommentGetter
+from src.mdr.preprocess import preprocess_mdr_comment
 from settings import MODEL_PATH, BACKUP_PATH, TABLE_ID
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
@@ -57,20 +59,24 @@ async def find_mentions(body: ExtractorRequestBody) -> ExtractorResponse:
 
 
 @APP.get("/v1/get_mdr_comments", response_model=BaseResponse)
-def update_comments_from_mdr() -> None:
+def update_comments_from_mdr(query: dict[str, Any] = Depends(MDRUpdateRequest.query_template)) -> None:
     """Get comments from mdr source, store them in the bucket and db."""
-    # get new new comments from mdr
-    # TODO
-    #raw_comments = get_raw_comments_from_mdr()
-    raw_comments = [Comment.dummy()]
+    config = MDRUpdateRequest.from_query(query)
+    get_comments = MDRCommentGetter()
+    comments = []
+    for raw_comment in get_comments(config.from_, config.to):
+        try:
+            comment = Comment(**preprocess_mdr_comment(raw_comment))
+        except (IndexError, AttributeError, KeyError, ValueError) as exc:
+            print(f"Skipping comment because of: {exc}")
+        else:
+            comments.append(comment)
+
     # save raw comments as backup
     file_path = BACKUP_PATH + f"{datetime.now().isoformat()}_comment_backup.jsonl"
-    write_jsonlines_to_bucket(file_path, [c.as_dict() for c in raw_comments])
-    # TODO
+    write_jsonlines_to_bucket(file_path, [c.as_dict() for c in comments])
+    # TODO when needed
     # raw_comments = load_comments_from_bucket(path)
-    # TODO when building 'get_raw_comments_from_mdr()'
-    #comments = preprocess_mdr_comments(raw_comments)
-    comments = raw_comments
     writer = BigQueryWriter()
     writer.write_file(file_path, TABLE_ID)
     msg = f"Got, stored and wrote {len(comments)} comments."

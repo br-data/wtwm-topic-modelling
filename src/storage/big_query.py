@@ -7,7 +7,9 @@ class BigQueryWriter:
     def __init__(self) -> None:
         self.project_id = BIGQUERY_PROJECT_ID
         self.dataset_id = BIGQUERY_DATASET_ID
-        self.credentials = service_account.Credentials.from_service_account_file(BIGQUERY_CREDENTIAL_PATH)
+        self.credentials = service_account.Credentials.from_service_account_file(
+            BIGQUERY_CREDENTIAL_PATH
+        )
         self.client = Client(credentials=self.credentials, project=self.project_id)
 
     def write_file(self, file_path: str, table_id: str):
@@ -29,8 +31,6 @@ class BigQueryWriter:
 
         # load the data
         job = self.client.load_table_from_file(
-            open(file_path, "rb"),
-            table_ref,
-            job_config=load_job_config
+            open(file_path, "rb"), table_ref, job_config=load_job_config
         )
         job.result()
