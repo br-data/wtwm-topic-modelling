@@ -41,6 +41,7 @@ class MDRCommentGetter(BaseModel):
             items.extend(response["items"])
             query["page"] += 1
             response = request(self.url, body=query, headers=headers)
+            response_items = response["items"]
 
         return items
 
