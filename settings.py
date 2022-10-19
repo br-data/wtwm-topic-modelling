@@ -9,4 +9,4 @@ BIGQUERY_CREDENTIAL_PATH = os.environ.get(
     "IDA_BIGQUERY_CREDENTIAL_PATH", "data/journalismai-credentials.json"
 )
 BIGQUERY_DATASET_ID = "wtwm"
-TABLE_ID = os.environ.get("TABLE_ID", "test_table")
+TABLE_ID = os.environ.get("TABLE_ID", "comments")

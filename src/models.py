@@ -55,7 +55,7 @@ class Comment(BaseModel):
     username: str  # technical name of the comment author
     created_at: datetime
     last_updated_at: datetime  # meant as database update of this comment
-    mentions: Optional[list[Optional[ExtractorResult]]]
+    mentions: list[Optional[ExtractorResult]]
     media_house: MediaHouse
 
     @classmethod
