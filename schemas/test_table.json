@@ -1,0 +1,114 @@
+{
+  "creationTime": "1665666670562",
+  "etag": "DVE4WBNnSGc6eN0kgN6lNg==",
+  "expirationTime": "1670850670562",
+  "id": "journalismai-362410:wtwm.test_table",
+  "kind": "bigquery#table",
+  "lastModifiedTime": "1666094509161",
+  "location": "europe-west3",
+  "numActiveLogicalBytes": "1225",
+  "numActivePhysicalBytes": "8364",
+  "numBytes": "1225",
+  "numLongTermBytes": "0",
+  "numLongTermLogicalBytes": "0",
+  "numLongTermPhysicalBytes": "0",
+  "numRows": "7",
+  "numTimeTravelPhysicalBytes": "0",
+  "numTotalLogicalBytes": "1225",
+  "numTotalPhysicalBytes": "8364",
+  "schema": {
+    "fields": [
+      {
+        "description": "bq-datetime",
+        "mode": "NULLABLE",
+        "name": "last_updated_at",
+        "type": "TIMESTAMP"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "media_house",
+        "type": "STRING"
+      },
+      {
+        "description": "bq-datetime",
+        "mode": "NULLABLE",
+        "name": "created_at",
+        "type": "TIMESTAMP"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "username",
+        "type": "STRING"
+      },
+      {
+        "fields": [
+          {
+            "mode": "NULLABLE",
+            "name": "extracted_from",
+            "type": "STRING"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "label",
+            "type": "STRING"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "offset",
+            "type": "INTEGER"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "start",
+            "type": "INTEGER"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "body",
+            "type": "STRING"
+          }
+        ],
+        "mode": "REPEATED",
+        "name": "mentions",
+        "type": "RECORD"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "author_id",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "asset_id",
+        "type": "INTEGER"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "body",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "status",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "asset_url",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "id",
+        "type": "STRING"
+      }
+    ]
+  },
+  "selfLink": "https://bigquery.googleapis.com/bigquery/v2/projects/journalismai-362410/datasets/wtwm/tables/test_table",
+  "tableReference": {
+    "datasetId": "wtwm",
+    "projectId": "journalismai-362410",
+    "tableId": "test_table"
+  },
+  "type": "TABLE"
+}
