@@ -29,6 +29,5 @@ def preprocess_mdr_comment(raw: dict[str, Any]) -> dict[str, Any]:
                 extracted_from=ExtractionType.SPACY_MODEL_A,
             )
         ],
-
         "media_house": MediaHouse.MDR,
     }

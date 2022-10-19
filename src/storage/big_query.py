@@ -1,9 +1,32 @@
-from settings import BIGQUERY_PROJECT_ID, BIGQUERY_DATASET_ID, BIGQUERY_CREDENTIAL_PATH, TABLE_ID
+from typing import Any
+from settings import (
+    BIGQUERY_PROJECT_ID,
+    BIGQUERY_DATASET_ID,
+    BIGQUERY_CREDENTIAL_PATH,
+    TABLE_ID,
+)
 from google.oauth2 import service_account
 from google.cloud.bigquery import LoadJobConfig, SourceFormat, Client, Table
 from random import randint
 from datetime import datetime, timedelta
 from pytz import utc
+
+
+class BigQueryReader:
+    def __init__(self) -> None:
+        self.project_id = BIGQUERY_PROJECT_ID
+        self.dataset_id = BIGQUERY_DATASET_ID
+        self.credentials = service_account.Credentials.from_service_account_file(
+            BIGQUERY_CREDENTIAL_PATH
+        )
+        self.client = Client(credentials=self.credentials, project=self.project_id)
+
+    def query_table(self) -> list[dict[str, Any]]:
+        full_table_id = f"{BIGQUERY_PROJECT_ID}.{BIGQUERY_DATASET_ID}.{TABLE_ID}"
+        query = f"SELECT * FROM `{full_table_id}`"
+        breakpoint()
+        query_job = self.client.query(query)
+        return query_job
 
 
 class BigQueryWriter:
@@ -25,7 +48,7 @@ class BigQueryWriter:
 
         if expiracy_hours is not None:
             suffix = randint(10000, 99999)
-            table_id += '_temp_' + str(suffix)
+            table_id += "_temp_" + str(suffix)
             expiracy_date = datetime.now(utc) + timedelta(hours=expiracy_hours)
 
         table = Table(table_id, schema=schema)
@@ -49,12 +72,12 @@ class BigQueryWriter:
         table_ref = dataset_ref.table(table_id)
 
         # create temporary table
-        schema_path = 'schemas/' + table_id + '.json'
+        schema_path = "schemas/" + table_id + ".json"
         schema = self.client.schema_from_json(schema_path)
         temp_table_id = self.create_table(
             f"{BIGQUERY_PROJECT_ID}.{BIGQUERY_DATASET_ID}.{table_id}",
             schema,
-            expiracy_hours=1
+            expiracy_hours=1,
         )
 
         # create a load job config

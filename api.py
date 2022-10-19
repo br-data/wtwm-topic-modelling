@@ -12,7 +12,7 @@ from src.api.request_models import ExtractorRequestBody, MDRUpdateRequest
 from src.models import Comment
 from src.tools import write_jsonlines_to_bucket
 from src.extract import extract_mentions_from_text
-from src.storage.big_query import BigQueryWriter
+from src.storage.big_query import BigQueryWriter, BigQueryReader
 from src.mdr.get_comments import MDRCommentGetter
 from src.mdr.preprocess import preprocess_mdr_comment
 from settings import MODEL_PATH, BACKUP_PATH, TABLE_ID
@@ -111,17 +111,21 @@ def update_comments_from_mdr(
 #    # find_mentions(comments)
 #    # update_comments_in_db(comments)
 #
-# @APP.post("/v1/send_comments_to_teams")
-# def send_comments_to_teams(*args, **kwargs) -> None:
-#    # unsend = get_unsend_comments_from_db()
-#    # response = send_comments_to_teams(unsend)
-#    # sent = []
-#    # for result, comment in zip(unsend, result):
-#        # mark_as_send(comment)
-#        # add_feedback(comment, result)
-#        # sent.append(comment)
-#
-#    # update_comments_in_db(sent)
+@APP.post("/v1/send_comments_to_teams")
+def send_comments_to_teams() -> None:
+    reader = BigQueryReader()
+    res = reader.query_table()
+
+
+# unsend = get_unsend_comments_from_db()
+# response = send_comments_to_teams(unsend)
+# sent = []
+# for result, comment in zip(unsend, result):
+# mark_as_send(comment)
+# add_feedback(comment, result)
+# sent.append(comment)
+
+# update_comments_in_db(sent)
 
 # @APP.post("/v1/generate_train_corpus")
 # def generate_train_corpus() -> None:
