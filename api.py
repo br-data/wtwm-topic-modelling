@@ -16,7 +16,7 @@ from src.extract import extract_mentions_from_text
 from src.storage.big_query import BigQueryWriter
 from src.mdr.get_comments import MDRCommentGetter
 from src.mdr.preprocess import preprocess_mdr_comment
-from src.publisher.teams import TeamsConnector
+from src.publisher.teams import TeamsConnector, send_comments
 from settings import MODEL_PATH, BACKUP_PATH, TABLE_ID
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
@@ -118,7 +118,7 @@ def update_comments_from_mdr(
 @APP.post("/v1/send_comments_to_teams", response_model=BaseResponse)
 def send_comments_to_teams() -> None:
     """Get unsend comments and publish them to teams."""
-    #TODO add db reader
+    # TODO add db reader
     # mocking here for now
     unsend = [Comment.dummy()]
     if not unsend:
@@ -129,19 +129,6 @@ def send_comments_to_teams() -> None:
     by_media_house = defaultdict(list)
     for comment in unsend:
         by_media_house[comment.media_house.value].append(comment)
-
-    def send_comments(connector: TeamsConnector, comments: list[Comment], writer: BigQueryWriter) -> None:
-        """Send comments to teams.
-
-        :param connector: teams connection interfacel
-        :param comments: comments to send
-        """
-        for comment_entry in comments:
-            connector.send(comment_entry.body)
-            comment_entry.status = Status.TO_BE_EVALUATED
-            # update status everytime to prevent status update fail in case of chrash
-            # if necessary build pub/sub after prototype phase
-            writer.update_comment(comment_entry)
 
     pub_buf = 0
     for media_house_id, comments in by_media_house.items():
