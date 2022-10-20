@@ -1,10 +1,9 @@
-
-rom pydantic import BaseModel
+from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, Union
 
 from enum import Enum
-from settings import TEST_TARGET, TEST_TARGET_TOKEN
+from settings import TEST_TARGET
 
 
 class Status(Enum):
@@ -41,13 +40,6 @@ class MediaHouse(Enum):
         """
         if self == MediaHouse.TEST:
             return TEST_TARGET
-        else:
-            raise NotImplementedError(f"Target for {self.value} is not available.")
-
-    def get_token(self) -> str:
-        """Return authorization token for teams channel request."""
-        if self == MediaHouse.TEST:
-            return TEST_TARGET_TOKEN
         else:
             raise NotImplementedError(f"Target for {self.value} is not available.")
 

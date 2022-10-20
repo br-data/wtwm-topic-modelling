@@ -1,4 +1,4 @@
-from typing import Any, Generator
+from typing import Any
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
@@ -118,9 +118,8 @@ def update_comments_from_mdr(
 @APP.post("/v1/send_comments_to_teams", response_model=BaseResponse)
 def send_comments_to_teams() -> None:
     """Get unsend comments and publish them to teams."""
-    # add db reader
+    #TODO add db reader
     # mocking here for now
-    breakpoint()
     unsend = [Comment.dummy()]
     if not unsend:
         msg = "No new comments to send"
@@ -144,11 +143,13 @@ def send_comments_to_teams() -> None:
             # if necessary build pub/sub after prototype phase
             writer.update_comment(comment_entry)
 
+    pub_buf = 0
     for media_house_id, comments in by_media_house.items():
         connector = TeamsConnector(MediaHouse.from_id(media_house_id))
         send_comments(connector, comments, writer)
+        pub_buf += len(comments)
 
-    msg = f"Published {len(to_br)} BR comments and {len(to_mdr)} comments."
+    msg = f"Published {pub_buf} comments."
     return BaseResponse(status="ok", msg=msg)
 
 

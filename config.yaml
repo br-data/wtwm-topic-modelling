@@ -37,6 +37,8 @@ run:
       value: "test_table"
     - name: IDA_BIGQUERY_CREDENTIAL_PATH
       value: sm://{{.projectId}}/wtwm-db-credential-path
+    - name: TEST_TARGET
+      value: sm://{{.projectId}}/wtwm-test-target
 settings:
   type: service
   persistentBucket: wtwm-data-bucket

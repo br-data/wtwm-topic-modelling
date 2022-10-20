@@ -12,5 +12,3 @@ BIGQUERY_DATASET_ID = "wtwm"
 TABLE_ID = os.environ.get("TABLE_ID", "comments")
 # test target for teams channel publication
 TEST_TARGET = os.environ["TEST_TARGET"]
-#TODO
-TEST_TARGET_TOKEN = os.environ["TEST_TARGET_TOKEN"]
