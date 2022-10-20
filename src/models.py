@@ -1,8 +1,10 @@
-from pydantic import BaseModel
+
+rom pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, Union
 
 from enum import Enum
+from settings import TEST_TARGET, TEST_TARGET_TOKEN
 
 
 class Status(Enum):
@@ -15,6 +17,39 @@ class Status(Enum):
 class MediaHouse(Enum):
     MDR = "mdr"
     BR = "br"
+    TEST = "test"
+
+    @classmethod
+    def from_id(cls, id_: str) -> "MediaHouse":
+        """Init class from media house id.
+
+        :param id_: media house id
+        """
+        if id_ == MediaHouse.MDR.value:
+            return MediaHouse.MDR
+        elif id_ == MediaHouse.BR.value:
+            return MediaHouse.BR
+        elif id_ == MediaHouse.TEST.value:
+            return MediaHouse.TEST
+        else:
+            raise ValueError(f"Unknown media house id: '{id_}'")
+
+    def get_target(self) -> str:
+        """Return the channel target.
+
+        Note: The target points to channel webhooke to distribute to. It serves as a address to publish to.
+        """
+        if self == MediaHouse.TEST:
+            return TEST_TARGET
+        else:
+            raise NotImplementedError(f"Target for {self.value} is not available.")
+
+    def get_token(self) -> str:
+        """Return authorization token for teams channel request."""
+        if self == MediaHouse.TEST:
+            return TEST_TARGET_TOKEN
+        else:
+            raise NotImplementedError(f"Target for {self.value} is not available.")
 
 
 class ExtractionType(Enum):
@@ -80,7 +115,7 @@ class Comment(BaseModel):
                     extracted_from=ExtractionType.SPACY_MODEL_A,
                 )
             ],
-            media_house=MediaHouse.MDR,
+            media_house=MediaHouse.TEST,
         )
 
     def as_dict(self) -> dict[str, Union[str, dict[str, Union[str, int]]]]:

@@ -5,6 +5,8 @@ from random import randint
 from datetime import datetime, timedelta
 from pytz import utc
 
+from src.models import Comment
+
 
 class BigQueryWriter:
     def __init__(self) -> None:
@@ -67,3 +69,18 @@ class BigQueryWriter:
             open(file_path, "rb"), temp_table_id, job_config=load_job_config
         )
         job.result()
+
+    def update_comments(self, comments: list[Comment]):
+        """Update comments in database.
+
+        :param comments: comments to update"""
+        for comment in comments:
+            self.update_comment(comment)
+
+    def update_comment(self, comment: Comment) -> None:
+        """Update comment in database.
+
+        :param comment: comment to update
+        """
+        # TODO
+        pass
