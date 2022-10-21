@@ -4,17 +4,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import uvicorn
 from datetime import datetime
+from collections import defaultdict
 
 import spacy
 
 from src.api.response_models import ExtractorResponse, ErrorCode, BaseResponse
 from src.api.request_models import ExtractorRequestBody, MDRUpdateRequest
-from src.models import Comment
+from src.models import Comment, Status, MediaHouse
 from src.tools import write_jsonlines_to_bucket
 from src.extract import extract_mentions_from_text
 from src.storage.big_query import BigQueryWriter
 from src.mdr.get_comments import MDRCommentGetter
 from src.mdr.preprocess import preprocess_mdr_comment
+from src.publisher.teams import TeamsConnector, send_comments
 from settings import MODEL_PATH, BACKUP_PATH, TABLE_ID
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
@@ -111,17 +113,32 @@ def update_comments_from_mdr(
 #    # find_mentions(comments)
 #    # update_comments_in_db(comments)
 #
-# @APP.post("/v1/send_comments_to_teams")
-# def send_comments_to_teams(*args, **kwargs) -> None:
-#    # unsend = get_unsend_comments_from_db()
-#    # response = send_comments_to_teams(unsend)
-#    # sent = []
-#    # for result, comment in zip(unsend, result):
-#        # mark_as_send(comment)
-#        # add_feedback(comment, result)
-#        # sent.append(comment)
-#
-#    # update_comments_in_db(sent)
+
+
+@APP.post("/v1/send_comments_to_teams", response_model=BaseResponse)
+def send_comments_to_teams() -> None:
+    """Get unsend comments and publish them to teams."""
+    # TODO add db reader
+    # mocking here for now
+    unsend = [Comment.dummy()]
+    if not unsend:
+        msg = "No new comments to send"
+        return BaseResponse(status="ok", msg=msg)
+
+    writer = BigQueryWriter()
+    by_media_house = defaultdict(list)
+    for comment in unsend:
+        by_media_house[comment.media_house.value].append(comment)
+
+    pub_buf = 0
+    for media_house_id, comments in by_media_house.items():
+        connector = TeamsConnector(MediaHouse.from_id(media_house_id))
+        send_comments(connector, comments, writer)
+        pub_buf += len(comments)
+
+    msg = f"Published {pub_buf} comments."
+    return BaseResponse(status="ok", msg=msg)
+
 
 # @APP.post("/v1/generate_train_corpus")
 # def generate_train_corpus() -> None:

@@ -1,9 +1,16 @@
-from settings import BIGQUERY_PROJECT_ID, BIGQUERY_DATASET_ID, BIGQUERY_CREDENTIAL_PATH, TABLE_ID
+from settings import (
+    BIGQUERY_PROJECT_ID,
+    BIGQUERY_DATASET_ID,
+    BIGQUERY_CREDENTIAL_PATH,
+    TABLE_ID,
+)
 from google.oauth2 import service_account
 from google.cloud.bigquery import LoadJobConfig, SourceFormat, Client, Table
 from random import randint
 from datetime import datetime, timedelta
 from pytz import utc
+
+from src.models import Comment
 
 
 class BigQueryWriter:
@@ -25,7 +32,7 @@ class BigQueryWriter:
 
         if expiracy_hours is not None:
             suffix = randint(10000, 99999)
-            table_id += '_temp_' + str(suffix)
+            table_id += "_temp_" + str(suffix)
             expiracy_date = datetime.now(utc) + timedelta(hours=expiracy_hours)
 
         table = Table(table_id, schema=schema)
@@ -49,12 +56,12 @@ class BigQueryWriter:
         table_ref = dataset_ref.table(table_id)
 
         # create temporary table
-        schema_path = 'schemas/' + table_id + '.json'
+        schema_path = "schemas/" + table_id + ".json"
         schema = self.client.schema_from_json(schema_path)
         temp_table_id = self.create_table(
             f"{BIGQUERY_PROJECT_ID}.{BIGQUERY_DATASET_ID}.{table_id}",
             schema,
-            expiracy_hours=1
+            expiracy_hours=1,
         )
 
         # create a load job config
@@ -67,3 +74,18 @@ class BigQueryWriter:
             open(file_path, "rb"), temp_table_id, job_config=load_job_config
         )
         job.result()
+
+    def update_comments(self, comments: list[Comment]):
+        """Update comments in database.
+
+        :param comments: comments to update"""
+        for comment in comments:
+            self.update_comment(comment)
+
+    def update_comment(self, comment: Comment) -> None:
+        """Update comment in database.
+
+        :param comment: comment to update
+        """
+        # TODO
+        pass

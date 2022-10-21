@@ -19,7 +19,7 @@ class MDRCommentGetter(BaseModel):
         size: int = 20,
         start_page: int = 1,
         max_pages: int = 2,
-        verbose: bool = True
+        verbose: bool = True,
     ) -> list[dict[str, Union[int, list[dict[str, Union[str, int]]]]]]:
         """Get commens for a specified timeframe.
 
