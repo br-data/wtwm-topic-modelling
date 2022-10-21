@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 from enum import Enum
-from settings import TEST_TARGET
+from settings import TEST_TARGET, TEST_FEEDBACK_TARGET
 
 
 class Status(Enum):
@@ -36,10 +36,20 @@ class MediaHouse(Enum):
     def get_target(self) -> str:
         """Return the channel target.
 
-        Note: The target points to channel webhooke to distribute to. It serves as a address to publish to.
+        Note: The target points to channel webhook to distribute to. It serves as a address to publish to.
         """
         if self == MediaHouse.TEST:
             return TEST_TARGET
+        else:
+            raise NotImplementedError(f"Target for {self.value} is not available.")
+
+    def get_feedback_target(self) -> str:
+        """Return the target to the feedback channel.
+
+        Note: The feedback target specifies the endpoint for the feedback to be send to.
+        """
+        if self == MediaHouse.TEST:
+            return TEST_FEEDBACK_TARGET
         else:
             raise NotImplementedError(f"Target for {self.value} is not available.")
 
