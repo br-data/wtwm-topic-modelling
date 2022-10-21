@@ -34,11 +34,11 @@ run:
     - name: MDR_COMMENT_ENDPOINT
       value: sm://{{.projectId}}/mdr-comment-endpoint
     - name: TABLE_ID
-      value: "comments"
+      value: "test_table"
     - name: IDA_BIGQUERY_CREDENTIAL_PATH
       value: sm://{{.projectId}}/wtwm-db-credential-path
-    - name: TEST_TARGET
-      value: sm://{{.projectId}}/wtwm-test-target
+    - name: MDR_TARGET
+      value: sm://{{.projectId}}/wtwm-mdr-target
 settings:
   type: service
   persistentBucket: wtwm-data-bucket

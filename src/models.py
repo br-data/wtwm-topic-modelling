@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 from enum import Enum
-from settings import TEST_TARGET, TEST_FEEDBACK_TARGET
+from settings import MDR_TARGET, TEST_TARGET, TEST_FEEDBACK_TARGET, MDR_FEEDBACK_TARGET
 
 
 class Status(Enum):
@@ -40,6 +40,8 @@ class MediaHouse(Enum):
         """
         if self == MediaHouse.TEST:
             return TEST_TARGET
+        elif self == MediaHouse.MDR:
+            return MDR_TARGET
         else:
             raise NotImplementedError(f"Target for {self.value} is not available.")
 
@@ -50,6 +52,8 @@ class MediaHouse(Enum):
         """
         if self == MediaHouse.TEST:
             return TEST_FEEDBACK_TARGET
+        elif self == MediaHouse.MDR:
+            return MDR_FEEDBACK_TARGET
         else:
             raise NotImplementedError(f"Target for {self.value} is not available.")
 

@@ -12,5 +12,7 @@ BIGQUERY_DATASET_ID = "wtwm"
 TABLE_ID = os.environ.get("TABLE_ID", "comments")
 # test target for teams channel publication
 TEST_TARGET = os.environ["TEST_TARGET"]
-#TODO add feedback channel address
+MDR_TARGET = os.environ["MDR_TARGET"]
+# TODO add feedback channel address
 TEST_FEEDBACK_TARGET = "TODO"
+MDR_FEEDBACK_TARGET = "TODO"
