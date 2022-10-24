@@ -42,3 +42,7 @@ run:
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
+  database:
+    type: postgresql
+    size: 15
+    frontend: true
