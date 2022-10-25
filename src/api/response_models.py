@@ -13,4 +13,4 @@ class BaseResponse(BaseModel):
 
 
 class ExtractorResponse(BaseResponse):
-    result: list[ExtractorResult]
+    result: list[dict]

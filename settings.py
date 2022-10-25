@@ -16,3 +16,15 @@ MDR_TARGET = os.environ["MDR_TARGET"]
 # TODO add feedback channel address
 TEST_FEEDBACK_TARGET = "TODO"
 MDR_FEEDBACK_TARGET = "TODO"
+
+# postgres
+POSTGRES_IP = os.environ.get("POSTGRES_IP", "localhost")
+POSTGRES_PORT = os.environ.get("POSTGRES_PORT", "5432"
+)
+POSTGRES_USER = os.environ.get("DATABASE_USER", "postgres")
+POSTGRES_PASS = os.environ.get("DATABASE_PASSWORD", "admin123")
+POSTGRES_URI = (
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASS}@{POSTGRES_IP}:{POSTGRES_PORT}"
+)
+
+USE_BIGQUERY = False

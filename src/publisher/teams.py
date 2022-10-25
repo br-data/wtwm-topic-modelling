@@ -2,7 +2,7 @@ from typing import Union
 from src.tools import request
 
 from src.models import MediaHouse, Comment, Status
-from src.storage.big_query import BigQueryWriter
+from src.storage.postgres import TableWriter
 
 
 class TeamsConnector:
@@ -81,7 +81,7 @@ class TeamsConnector:
 
 
 def send_comments(
-    connector: TeamsConnector, comments: list[Comment], writer: BigQueryWriter
+    connector: TeamsConnector, comments: list[Comment], writer: TableWriter
 ) -> None:
     """Send comments to teams.
 
@@ -91,7 +91,7 @@ def send_comments(
     """
     for comment_entry in comments:
         connector.send(comment_entry.body)
-        comment_entry.status = Status.TO_BE_EVALUATED
+        comment_entry.status = Status.WAIT_FOR_EVALUATION
         # update status everytime to prevent status update fail in case of chrash
         # if necessary build pub/sub after prototype phase
-        writer.update_comment(comment_entry)
+        writer.update(comment_entry)

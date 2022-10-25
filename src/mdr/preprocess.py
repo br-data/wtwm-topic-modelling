@@ -20,14 +20,6 @@ def preprocess_mdr_comment(raw: dict[str, Any]) -> dict[str, Any]:
         "username": raw["author"]["username"],
         "created_at": parse(raw["created_at"]),
         "last_updated_at": datetime.now(),
-        "mentions": [
-            ExtractorResult(
-                body="Hallo Redaktion",
-                start=0,
-                offset=16,
-                label="mention",
-                extracted_from=ExtractionType.SPACY_MODEL_A,
-            )
-        ],
+        "mentions": [],
         "media_house": MediaHouse.MDR,
     }
