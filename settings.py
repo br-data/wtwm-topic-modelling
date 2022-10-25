@@ -18,13 +18,10 @@ TEST_FEEDBACK_TARGET = "TODO"
 MDR_FEEDBACK_TARGET = "TODO"
 
 # postgres
-POSTGRES_IP = os.environ.get("POSTGRES_IP", "localhost")
-POSTGRES_PORT = os.environ.get("POSTGRES_PORT", "5432"
-)
-POSTGRES_USER = os.environ.get("DATABASE_USER", "postgres")
-POSTGRES_PASS = os.environ.get("DATABASE_PASSWORD", "admin123")
+POSTGRES_IP = os.environ["POSTGRES_IP"]
+POSTGRES_PORT = os.environ["POSTGRES_PORT"]
+POSTGRES_USER = os.environ["DATABASE_USER"]
+POSTGRES_PASS = os.environ["DATABASE_PASSWORD"]
 POSTGRES_URI = (
     f"postgresql://{POSTGRES_USER}:{POSTGRES_PASS}@{POSTGRES_IP}:{POSTGRES_PORT}"
 )
-
-USE_BIGQUERY = False

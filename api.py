@@ -18,7 +18,7 @@ from src.mdr.preprocess import preprocess_mdr_comment
 from src.mdr.get_comments import MDRCommentGetter
 from src.publisher.teams import TeamsConnector, send_comments
 from src.storage.postgres import create_tables, get_engine, TableWriter, sessionmaker, get_unpublished, get_unprocessed
-from settings import MODEL_PATH, BACKUP_PATH, TABLE_ID, POSTGRES_URI, USE_BIGQUERY
+from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
 APP = FastAPI(
@@ -82,13 +82,13 @@ def update_comments_from_mdr(
         else:
             comments.append(comment)
 
-    # save raw comments as backup
+    ## save raw comments as backup
     file_path = BACKUP_PATH + f"{datetime.now().isoformat()}_comment_backup.jsonl"
     write_jsonlines_to_bucket(file_path, [c.as_dict() for c in comments])
     # TODO when needed
     # raw_comments = load_comments_from_bucket(path)
     # write to database
-    with TableWriter(engine, purge=True) as writer:
+    with TableWriter(engine, purge=False) as writer:
         for comment in comments:
             writer.write(comment)
 
