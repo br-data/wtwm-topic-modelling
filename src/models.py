@@ -77,8 +77,7 @@ class MediaHouse(Enum):
 
 class ExtractionType(Enum):
     ANNOTATION = "annotation"
-    # TODO
-    SPACY_MODEL_A = "spacy_model_name"
+    SPACY_MODEL_A = "bugg_model_v1"
 
 
 class ReportTimestamp(BaseModel):
