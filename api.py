@@ -90,7 +90,7 @@ def update_comments_from_mdr(
     # write to database
     with TableWriter(engine, purge=False) as writer:
         for comment in comments:
-            writer.write(comment)
+            writer.update(comment)
 
     msg = f"Got, stored and wrote {len(comments)} comments."
     return BaseResponse(status="ok", msg=msg)
@@ -120,7 +120,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     with TableWriter(engine, session=session, purge=False) as writer:
         # take care to first write the mentions to have a db entry to reference from the comment
         for mention in mentions:
-            writer.write(mention)
+            writer.update(mention)
 
         for comment in comments:
             writer.update(comment)

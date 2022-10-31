@@ -107,7 +107,6 @@ def get_unpublished(session) -> list[Comment]:
 
     :param session: running postgress connection
     """
-
     return session\
         .query(Comment)\
         .join(ExtractorResult)\
