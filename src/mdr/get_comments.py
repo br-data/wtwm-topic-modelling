@@ -61,8 +61,8 @@ class MDRCommentGetter(BaseModel):
                     {
                         "date_range": {
                             "created_at": {
-                                "from": from_.strftime("%Y-%m-%y %H:%M:%S"),
-                                "to": to.strftime("%Y-%m-%y %H:%M:%S"),
+                                "from": from_.strftime("%Y-%m-%d %H:%M:%S"),
+                                "to": to.strftime("%Y-%m-%d %H:%M:%S"),
                             }
                         }
                     }
