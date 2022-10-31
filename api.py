@@ -10,12 +10,14 @@ import spacy
 import uuid
 
 from src.api.response_models import ExtractorResponse, ErrorCode, BaseResponse
-from src.api.request_models import ExtractorRequestBody, MDRUpdateRequest
+from src.api.request_models import ExtractorRequestBody, MDRUpdateRequest, BRUpdateRequest
 from src.models import Comment, MediaHouse, ExtractionType, Status
 from src.tools import write_jsonlines_to_bucket
 from src.extract import extract_mentions_from_text
 from src.mdr.preprocess import preprocess_mdr_comment
 from src.mdr.get_comments import MDRCommentGetter
+from src.br.get_comments import BRCommentGetter
+from src.br.preprocess import preprocess_br_comment
 from src.publisher.teams import TeamsConnector, send_comments
 from src.storage.postgres import create_tables, get_engine, TableWriter, sessionmaker, get_unpublished, get_unprocessed
 from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI
@@ -77,6 +79,40 @@ def update_comments_from_mdr(
     for raw_comment in get_comments(config.from_, config.to):
         try:
             comment = Comment(**preprocess_mdr_comment(raw_comment))
+        except (IndexError, AttributeError, KeyError, ValueError) as exc:
+            print(f"Skipping comment because of: {exc}")
+        else:
+            comments.append(comment)
+
+    ## save raw comments as backup
+    file_path = BACKUP_PATH + f"{datetime.now().isoformat()}_comment_backup.jsonl"
+    write_jsonlines_to_bucket(file_path, [c.as_dict() for c in comments])
+    # TODO when needed
+    # raw_comments = load_comments_from_bucket(path)
+    # write to database
+    with TableWriter(engine, purge=False) as writer:
+        for comment in comments:
+            writer.write(comment)
+
+    msg = f"Processed {len(comments)} comments."
+    return BaseResponse(status="ok", msg=msg)
+
+
+@APP.get("/v1/get_latest_br_comments", response_model=BaseResponse)
+def get_latest_br_comments(
+        query: dict[str, Any] = Depends(BRUpdateRequest.query_template)
+) -> BaseResponse:
+    """Get comments from mdr source, store them in the bucket and db."""
+    config = BRUpdateRequest.from_query(query)
+    get_comments = BRCommentGetter()
+    # postgres credentials
+    engine = get_engine(POSTGRES_URI)
+    create_tables(engine)
+    # process comments
+    comments = []
+    for raw_comment in get_comments(config.lookback):
+        try:
+            comment = Comment(**preprocess_br_comment(raw_comment))
         except (IndexError, AttributeError, KeyError, ValueError) as exc:
             print(f"Skipping comment because of: {exc}")
         else:

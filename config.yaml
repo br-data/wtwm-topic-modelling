@@ -33,6 +33,10 @@ run:
       value: sm://{{.projectId}}/mdr-comment-endpoint-bearer
     - name: MDR_COMMENT_ENDPOINT
       value: sm://{{.projectId}}/mdr-comment-endpoint
+    - name: BR_COMMENT_ENDPOINT_TOKEN
+      value: sm://{{.projectId}}/br-comment-endpoint-bearer
+    - name: BR_COMMENT_ENDPOINT
+      value: sm://{{.projectId}}/br-comment-endpoint
     - name: TABLE_ID
       value: "test_table"
     - name: IDA_BIGQUERY_CREDENTIAL_PATH

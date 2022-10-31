@@ -20,7 +20,7 @@ def request(
     body: Optional[dict[str, Any]] = None,
     method: str = "Post",
     headers: Optional[dict[str, str]] = None,
-) -> list[Optional[dict]]:
+) -> dict:
     """Request a given url.
 
     :param url: url to post to
