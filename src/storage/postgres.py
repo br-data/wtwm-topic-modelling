@@ -2,7 +2,7 @@ from typing import Any, Optional, Union
 
 from sqlalchemy.engine.base import Connection, Engine  # type: ignore
 from sqlalchemy.orm import sessionmaker  # type: ignore
-from sqlalchemy.exc import OperationalError  # type: ignore
+from sqlalchemy.exc import IntegrityError, OperationalError  # type: ignore
 from sqlalchemy import (create_engine, and_)  # type: ignore
 from src.models import BASE, Comment, ExtractorResult, Status
 
@@ -55,6 +55,16 @@ class TableWriter(PSQLWriter):
         else:
             raise ValueError("Session not initialized.")
 
+    def exists(self, entry: POSTGRES_ENTRY_TYPES) -> bool:
+        """True, if entry with same type and id exists, false otherwise.
+
+        :param entry: database item
+        """
+        if self._session is not None:
+            return bool(self._session.query(type(entry)).filter(type(entry).id == entry.id).all())
+        else:
+            raise ValueError("Session not initialized.")
+
     def write(
             self, entry: POSTGRES_ENTRY_TYPES
     ) -> None:
@@ -62,13 +72,15 @@ class TableWriter(PSQLWriter):
         :param entry: entry to add
         """
         if self._session is not None:
-            self._session.add(entry)
+            if self.exists(entry):
+                print(f"Skipping comment: {entry.id} because it is already in db.")
+            else:
+                self._session.add(entry)
+
         else:
             raise ValueError("Session not initialized.")
 
-    def update(
-            self, entry: POSTGRES_ENTRY_TYPES
-    ) -> None:
+    def update(self, entry: POSTGRES_ENTRY_TYPES) -> None:
         """Merge entry with current session.
         :param entry: entry to merge
         """
@@ -123,4 +135,3 @@ def get_unprocessed(session) -> list[Comment]:
         .query(Comment)\
         .filter(Comment.status == Status.TO_BE_PROCESSED)\
         .all()
-
