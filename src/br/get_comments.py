@@ -11,10 +11,7 @@ class BRCommentGetter(BaseModel):
     url: str = BR_COMMENT_ENDPOINT
     token: str = BR_COMMENT_ENDPOINT_TOKEN
 
-    def get_comments(
-        self,
-        lookback: int
-    ) -> list[Optional[dict]]:
+    def get_comments(self, lookback: int) -> list[Optional[dict]]:
         """Get commens for a specified timeframe.
 
         :param lookback: lookback from now in hours

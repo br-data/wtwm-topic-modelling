@@ -10,7 +10,11 @@ import spacy
 import uuid
 
 from src.api.response_models import ExtractorResponse, ErrorCode, BaseResponse
-from src.api.request_models import ExtractorRequestBody, MDRUpdateRequest, BRUpdateRequest
+from src.api.request_models import (
+    ExtractorRequestBody,
+    MDRUpdateRequest,
+    BRUpdateRequest,
+)
 from src.models import Comment, MediaHouse, ExtractionType, Status
 from src.tools import write_jsonlines_to_bucket
 from src.extract import extract_mentions_from_text
@@ -19,7 +23,14 @@ from src.mdr.get_comments import MDRCommentGetter
 from src.br.get_comments import BRCommentGetter
 from src.br.preprocess import preprocess_br_comment
 from src.publisher.teams import TeamsConnector, send_comments
-from src.storage.postgres import create_tables, get_engine, TableWriter, sessionmaker, get_unpublished, get_unprocessed
+from src.storage.postgres import (
+    create_tables,
+    get_engine,
+    TableWriter,
+    sessionmaker,
+    get_unpublished,
+    get_unprocessed,
+)
 from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
@@ -53,7 +64,12 @@ async def redirect():
 @APP.post("/v1/find_mentions", response_model=ExtractorResponse)
 async def find_mentions(body: ExtractorRequestBody) -> ExtractorResponse:
     """Extract mentions of the editorial team in a comment."""
-    result = extract_mentions_from_text(SPACY_MODEL, str(uuid.uuid1()), body.text, extracted_from=ExtractionType.SPACY_MODEL_A)
+    result = extract_mentions_from_text(
+        SPACY_MODEL,
+        str(uuid.uuid1()),
+        body.text,
+        extracted_from=ExtractionType.SPACY_MODEL_A,
+    )
     if len(result) > 1:
         msg = f"Found {len(result)} mentions."
     elif len(result) == 1:
@@ -100,7 +116,7 @@ def update_comments_from_mdr(
 
 @APP.get("/v1/get_latest_br_comments", response_model=BaseResponse)
 def get_latest_br_comments(
-        query: dict[str, Any] = Depends(BRUpdateRequest.query_template)
+    query: dict[str, Any] = Depends(BRUpdateRequest.query_template)
 ) -> BaseResponse:
     """Get comments from mdr source, store them in the bucket and db."""
     config = BRUpdateRequest.from_query(query)
@@ -144,7 +160,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
             SPACY_MODEL,
             comment.id,
             comment.body,
-            extracted_from=ExtractionType.SPACY_MODEL_A
+            extracted_from=ExtractionType.SPACY_MODEL_A,
         )
         if result:
             comment.status = Status.TO_BE_PUBLISHED

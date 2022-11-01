@@ -18,7 +18,9 @@ class MDRUpdateRequest(BaseModel):
     @staticmethod
     def query_template(
         from_: Optional[str] = Query(
-            (datetime.now() - timedelta(hours=DEFAULT_LOOKBACK)).isoformat(),  # example value
+            (
+                datetime.now() - timedelta(hours=DEFAULT_LOOKBACK)
+            ).isoformat(),  # example value
             title="From",
             description="'From' timestamp for timerange (iso 8601)",
         ),
@@ -63,11 +65,11 @@ class BRUpdateRequest(BaseModel):
 
     @staticmethod
     def query_template(
-            lookback: Optional[str] = Query(
-                DEFAULT_LOOKBACK,
-                title="lookback",
-                description="Lookback in hours for comments",
-            )
+        lookback: Optional[str] = Query(
+            DEFAULT_LOOKBACK,
+            title="lookback",
+            description="Lookback in hours for comments",
+        )
     ) -> dict[str, str]:
         """Define api query parameters.
 

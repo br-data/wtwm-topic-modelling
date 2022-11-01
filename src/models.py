@@ -6,14 +6,7 @@ import uuid
 
 from sqlalchemy.ext.declarative import declarative_base  # type: ignore
 from sqlalchemy.orm import relationship  # type: ignore
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    Text
-)
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Text
 from sqlalchemy import Enum as SQLEnum
 
 from settings import MDR_TARGET, TEST_TARGET, TEST_FEEDBACK_TARGET, MDR_FEEDBACK_TARGET
@@ -95,7 +88,9 @@ class Comment(BASE):
     author_id = Column(Text, unique=False)  # comment author
     username = Column(Text, unique=False)  # technical name of the comment author
     created_at = Column(DateTime, unique=False)
-    last_updated_at = Column(DateTime, unique=False)  # meant as database update of this comment
+    last_updated_at = Column(
+        DateTime, unique=False
+    )  # meant as database update of this comment
     media_house = Column(SQLEnum(MediaHouse), unique=False)
     mentions = relationship(
         "ExtractorResult",
