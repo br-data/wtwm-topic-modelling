@@ -18,7 +18,7 @@ class MDRUpdateRequest(BaseModel):
     @staticmethod
     def query_template(
         from_: Optional[str] = Query(
-            (datetime.now() - timedelta(days=30)).isoformat(),  # example value
+            (datetime.now() - timedelta(hours=DEFAULT_LOOKBACK)).isoformat(),  # example value
             title="From",
             description="'From' timestamp for timerange (iso 8601)",
         ),
@@ -42,8 +42,16 @@ class MDRUpdateRequest(BaseModel):
 
         :param query: api path query as dict
         """
-        from_ = datetime.fromisoformat(query["from"])
-        to = datetime.fromisoformat(query["to"])
+        try:
+            to = datetime.fromisoformat(query["to"])
+        except (KeyError, TypeError):
+            to = datetime.now()
+
+        try:
+            from_ = datetime.fromisoformat(query["from"])
+        except (KeyError, TypeError):
+            from_ = to - timedelta(hours=DEFAULT_LOOKBACK)
+
         if to <= from_:
             raise ValueError(f"'to' value lays before 'from' value: {to} <= {from_}")
 
