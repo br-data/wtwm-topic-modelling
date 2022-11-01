@@ -17,7 +17,7 @@ from src.api.request_models import (
 )
 from src.models import Comment, MediaHouse, Status
 from src.tools import write_jsonlines_to_bucket
-from src.recogniser.models import RecognitionType, recognise
+from src.recogniser.recognise import RecognitionType, recognise
 from src.mdr.preprocess import preprocess_mdr_comment
 from src.mdr.get_comments import MDRCommentGetter
 from src.br.get_comments import BRCommentGetter

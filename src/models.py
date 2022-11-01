@@ -11,6 +11,7 @@ from sqlalchemy import Enum as SQLEnum
 
 from settings import MDR_TARGET, TEST_TARGET, TEST_FEEDBACK_TARGET, MDR_FEEDBACK_TARGET
 
+
 BASE = declarative_base()
 
 
@@ -68,6 +69,12 @@ class MediaHouse(Enum):
             raise NotImplementedError(f"Target for {self.value} is not available.")
 
 
+class RecognitionType(Enum):
+    ANNOTATION = "annotation"
+    SPACY_MODEL_A = "bugg_model_v1"
+    PATTERN_RECOGNISER_A = "pattern_recogniser_v1"
+
+
 class RecognitionResult(BASE):
     __tablename__ = "mentions"
     id = Column(Text, primary_key=True)
@@ -76,7 +83,7 @@ class RecognitionResult(BASE):
     start = Column(Integer, unique=False)
     offset = Column(Integer, unique=False)
     label = Column(Text, unique=False)
-    extracted_from = Column(SQLEnum("RecognitionType"), unique=False)
+    extracted_from = Column(SQLEnum(RecognitionType), unique=False)
     comment = relationship(
         "Comment",
         back_populates="mentions",

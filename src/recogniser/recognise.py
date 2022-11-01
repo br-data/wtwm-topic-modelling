@@ -5,15 +5,9 @@ from sqlalchemy.orm import relationship  # type: ignore
 
 from src.recogniser.mer_recogniser import recognise_mer
 from src.recogniser.pattern_recogniser import MentionPatternRecogniser
-from src.models import RecognitionResult
+from src.models import RecognitionResult, RecognitionType
 
 PATTERN_RECOGNISER = MentionPatternRecogniser.from_list()
-
-
-class RecognitionType(Enum):
-    ANNOTATION = "annotation"
-    SPACY_MODEL_A = "bugg_model_v1"
-    PATTERN_RECOGNISER_A = "pattern_recogniser_v1"
 
 
 def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[RecognitionResult]:
