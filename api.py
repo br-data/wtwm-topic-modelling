@@ -9,15 +9,15 @@ from collections import defaultdict
 import spacy
 import uuid
 
-from src.api.response_models import ExtractorResponse, ErrorCode, BaseResponse
+from src.api.response_models import RecognitionResponse, ErrorCode, BaseResponse
 from src.api.request_models import (
     ExtractorRequestBody,
     MDRUpdateRequest,
     BRUpdateRequest,
 )
-from src.models import Comment, MediaHouse, ExtractionType, Status
+from src.models import Comment, MediaHouse, Status
 from src.tools import write_jsonlines_to_bucket
-from src.extract import extract_mentions_from_text
+from src.recogniser.models import RecognitionType, recognise
 from src.mdr.preprocess import preprocess_mdr_comment
 from src.mdr.get_comments import MDRCommentGetter
 from src.br.get_comments import BRCommentGetter
@@ -33,10 +33,11 @@ from src.storage.postgres import (
 )
 from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI
 
+
 SPACY_MODEL = spacy.load(MODEL_PATH)
 APP = FastAPI(
     title="WTWM mention extractor",
-    description="Extract mentions of the editorial team from a given text.",
+    description="Recognise mentions of the editorial team in a given text.",
     version="0.0.1",
 )
 APP.add_middleware(
@@ -61,23 +62,23 @@ async def redirect():
 
 
 # Note: Security is done by the dev server for now
-@APP.post("/v1/find_mentions", response_model=ExtractorResponse)
-async def find_mentions(body: ExtractorRequestBody) -> ExtractorResponse:
-    """Extract mentions of the editorial team in a comment."""
-    result = extract_mentions_from_text(
-        SPACY_MODEL,
-        str(uuid.uuid1()),
+@APP.post("/v1/find_mentions", response_model=RecognitionResponse)
+async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
+    """Find mentions of the editorial team in a comment."""
+    type_ = RecognitionType.PATTERN_RECOGNISER_A
+    results = recognise(
+        type_,
         body.text,
-        extracted_from=ExtractionType.SPACY_MODEL_A,
+        str(uuid.uuid1()),
     )
-    if len(result) > 1:
-        msg = f"Found {len(result)} mentions."
-    elif len(result) == 1:
-        msg = f"Found {len(result)} mentioning."
+    if len(results) > 1:
+        msg = f"Found {len(results)} mentions."
+    elif len(results) == 1:
+        msg = f"Found {len(results)} mentioning."
     else:
         msg = "Found no mentions."
 
-    return ExtractorResponse(status="ok", msg=msg, result=[r.as_dict() for r in result])
+    return RecognitionResponse(status="ok", msg=msg, result=[r.as_dict() for r in results])
 
 
 @APP.get("/v1/get_mdr_comments", response_model=BaseResponse)
@@ -155,17 +156,13 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     session = sessionmaker()(bind=engine)
     comments = get_unprocessed(session)
     mentions = []
+    type_ = RecognitionType.SPACY_MODEL_A
     for comment in comments:
-        result = extract_mentions_from_text(
-            SPACY_MODEL,
-            comment.id,
-            comment.body,
-            extracted_from=ExtractionType.SPACY_MODEL_A,
-        )
-        if result:
+        results = rec_type.recognise(type_, comment.body, comment.id)
+        if results:
             comment.status = Status.TO_BE_PUBLISHED
-            comment.mentions = result
-            mentions.extend(result)
+            comment.mentions = results
+            mentions.extend(results)
         else:
             comment.status = Status.NO_MENTIONS
 

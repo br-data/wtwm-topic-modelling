@@ -4,11 +4,11 @@ from sqlalchemy.engine.base import Connection, Engine  # type: ignore
 from sqlalchemy.orm import sessionmaker  # type: ignore
 from sqlalchemy.exc import IntegrityError, OperationalError  # type: ignore
 from sqlalchemy import create_engine, and_  # type: ignore
-from src.models import BASE, Comment, ExtractorResult, Status
+from src.models import BASE, Comment, RecognitionResult, Status
 
 
 SESSION = sessionmaker()
-POSTGRES_ENTRY_TYPES = Union[Comment, ExtractorResult]
+POSTGRES_ENTRY_TYPES = Union[Comment, RecognitionResult]
 
 
 class PSQLWriter:
@@ -123,7 +123,7 @@ def get_unpublished(session) -> list[Comment]:
     """
     return (
         session.query(Comment)
-        .join(ExtractorResult)
+        .join(RecognitionResult)
         .filter(Comment.status == Status.TO_BE_PUBLISHED)
         .all()
     )

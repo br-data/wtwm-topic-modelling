@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from src.models import ExtractorResult
 from enum import Enum
 
 
@@ -12,5 +11,5 @@ class BaseResponse(BaseModel):
     msg: str
 
 
-class ExtractorResponse(BaseResponse):
+class RecognitionResponse(BaseResponse):
     result: list[dict]

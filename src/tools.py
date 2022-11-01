@@ -1,6 +1,18 @@
 from typing import Any, Optional
 import jsonlines
 import requests
+import re
+from re import Pattern
+
+def normalize_query_pattern(query: str) -> str:
+    """Normalize query string (for the use with a trie).
+
+    :param query: query string to normalize
+    """
+    query = query.lower()
+    #only_letters: Pattern = re.compile(r"([^A-Za-z-.])+")
+    #query = re.sub(only_letters, query, " ")
+    return query
 
 
 def write_jsonlines_to_bucket(path: str, lines: list[dict]) -> None:

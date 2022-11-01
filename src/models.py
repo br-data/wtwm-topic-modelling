@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, Union
+from typing import Union
 from enum import Enum
 import uuid
 
@@ -68,9 +68,43 @@ class MediaHouse(Enum):
             raise NotImplementedError(f"Target for {self.value} is not available.")
 
 
-class ExtractionType(Enum):
-    ANNOTATION = "annotation"
-    SPACY_MODEL_A = "bugg_model_v1"
+class RecognitionResult(BASE):
+    __tablename__ = "mentions"
+    id = Column(Text, primary_key=True)
+    comment_id = Column(Text, ForeignKey("comments.id", ondelete="CASCADE"))
+    body = Column(Text, unique=False)
+    start = Column(Integer, unique=False)
+    offset = Column(Integer, unique=False)
+    label = Column(Text, unique=False)
+    extracted_from = Column(SQLEnum("RecognitionType"), unique=False)
+    comment = relationship(
+        "Comment",
+        back_populates="mentions",
+        passive_deletes=True,  # if True entry is delete if parent is deleted
+    )
+
+    @classmethod
+    def dummy(cls) -> "RecognitionResult":
+        return cls(
+            id=str(uuid.uuid1()),
+            comment_id="test_id",
+            body="Hallo Redaktion",
+            start=0,
+            offset=16,
+            label="mention",
+            extracted_from=RecognitionType.SPACY_MODEL_A,
+        )
+
+    def as_dict(self) -> dict[str, Union[int, str]]:
+        return dict(
+            id=self.id,
+            comment_id=self.comment_id,
+            body=self.body,
+            start=self.start,
+            offset=self.offset,
+            label=self.label,
+            extracted_from=self.extracted_from.value,
+        )
 
 
 class ReportTimestamp(BaseModel):
@@ -93,7 +127,7 @@ class Comment(BASE):
     )  # meant as database update of this comment
     media_house = Column(SQLEnum(MediaHouse), unique=False)
     mentions = relationship(
-        "ExtractorResult",
+        "RecognitionResult",
         back_populates="comment",
         cascade="all, delete",  # if this is delete, child object is also deleted
     )
@@ -111,7 +145,7 @@ class Comment(BASE):
             username="Jaime Again",
             created_at=now,
             last_updated_at=now,
-            mentions=[],  # add dummy of ExtractionResult if needed
+            mentions=[],  # add dummy of RecognitionResult if needed
             media_house=MediaHouse.TEST,
         )
 
@@ -133,43 +167,4 @@ class Comment(BASE):
             last_updated_at=self.last_updated_at.isoformat(),
             mentions=mentions,
             media_house=self.media_house.value,
-        )
-
-
-class ExtractorResult(BASE):
-    __tablename__ = "mentions"
-    id = Column(Text, primary_key=True)
-    comment_id = Column(Text, ForeignKey("comments.id", ondelete="CASCADE"))
-    body = Column(Text, unique=False)
-    start = Column(Integer, unique=False)
-    offset = Column(Integer, unique=False)
-    label = Column(Text, unique=False)
-    extracted_from = Column(SQLEnum(ExtractionType), unique=False)
-    comment = relationship(
-        "Comment",
-        back_populates="mentions",
-        passive_deletes=True,  # if True entry is delete if parent is deleted
-    )
-
-    @classmethod
-    def dummy(cls) -> "ExtractorResult":
-        return cls(
-            id=str(uuid.uuid1()),
-            comment_id="test_id",
-            body="Hallo Redaktion",
-            start=0,
-            offset=16,
-            label="mention",
-            extracted_from=ExtractionType.SPACY_MODEL_A,
-        )
-
-    def as_dict(self) -> dict[str, Union[int, str]]:
-        return dict(
-            id=self.id,
-            comment_id=self.comment_id,
-            body=self.body,
-            start=self.start,
-            offset=self.offset,
-            label=self.label,
-            extracted_from=self.extracted_from.value,
         )

@@ -2,7 +2,7 @@ from typing import Any
 from datetime import datetime
 from dateutil.parser import parse
 
-from src.models import MediaHouse, Status, ExtractorResult, ExtractionType
+from src.models import MediaHouse, Status
 
 
 def preprocess_mdr_comment(raw: dict[str, Any]) -> dict[str, Any]:
