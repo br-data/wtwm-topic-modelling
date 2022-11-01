@@ -3,7 +3,7 @@ from typing import Any, Optional, Union
 from sqlalchemy.engine.base import Connection, Engine  # type: ignore
 from sqlalchemy.orm import sessionmaker  # type: ignore
 from sqlalchemy.exc import IntegrityError, OperationalError  # type: ignore
-from sqlalchemy import (create_engine, and_)  # type: ignore
+from sqlalchemy import create_engine, and_  # type: ignore
 from src.models import BASE, Comment, ExtractorResult, Status
 
 
@@ -61,13 +61,15 @@ class TableWriter(PSQLWriter):
         :param entry: database item
         """
         if self._session is not None:
-            return bool(self._session.query(type(entry)).filter(type(entry).id == entry.id).all())
+            return bool(
+                self._session.query(type(entry))
+                .filter(type(entry).id == entry.id)
+                .all()
+            )
         else:
             raise ValueError("Session not initialized.")
 
-    def write(
-            self, entry: POSTGRES_ENTRY_TYPES
-    ) -> None:
+    def write(self, entry: POSTGRES_ENTRY_TYPES) -> None:
         """Add entry to current session.
         :param entry: entry to add
         """
@@ -119,11 +121,12 @@ def get_unpublished(session) -> list[Comment]:
 
     :param session: running postgress connection
     """
-    return session\
-        .query(Comment)\
-        .join(ExtractorResult)\
-        .filter(Comment.status == Status.TO_BE_PUBLISHED)\
+    return (
+        session.query(Comment)
+        .join(ExtractorResult)
+        .filter(Comment.status == Status.TO_BE_PUBLISHED)
         .all()
+    )
 
 
 def get_unprocessed(session) -> list[Comment]:
@@ -131,7 +134,4 @@ def get_unprocessed(session) -> list[Comment]:
 
     :param session: running postgress connection
     """
-    return session\
-        .query(Comment)\
-        .filter(Comment.status == Status.TO_BE_PROCESSED)\
-        .all()
+    return session.query(Comment).filter(Comment.status == Status.TO_BE_PROCESSED).all()
