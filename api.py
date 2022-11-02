@@ -167,10 +167,6 @@ def add_mentions_to_stored_comments() -> BaseResponse:
             comment.status = Status.NO_MENTIONS
 
     with TableWriter(engine, session=session, purge=False) as writer:
-        # take care to first write the mentions to have a db entry to reference from the comment
-        for mention in mentions:
-            writer.write(mention)
-
         for comment in comments:
             writer.update(comment)
 
