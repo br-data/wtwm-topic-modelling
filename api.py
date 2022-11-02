@@ -69,7 +69,7 @@ async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     results = recognise(
         type_,
         body.text,
-        str(uuid.uuid1()),
+        str(uuid.uuid4()),
     )
     if len(results) > 1:
         msg = f"Found {len(results)} mentions."

@@ -26,7 +26,7 @@ def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[Recogn
 
     return [
         RecognitionResult(
-            id=str(uuid.uuid1()),
+            id=str(uuid.uuid4()),
             comment_id=comment_id,
             extracted_from=type_,
             **result

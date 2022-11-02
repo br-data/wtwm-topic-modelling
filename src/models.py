@@ -93,7 +93,7 @@ class RecognitionResult(BASE):
     @classmethod
     def dummy(cls) -> "RecognitionResult":
         return cls(
-            id=str(uuid.uuid1()),
+            id=str(uuid.uuid4()),
             comment_id="test_id",
             body="Hallo Redaktion",
             start=0,
