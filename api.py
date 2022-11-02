@@ -32,6 +32,7 @@ from src.storage.postgres import (
     get_unprocessed,
 )
 from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI
+from src.exceptions import PreprocessingError
 
 
 SPACY_MODEL = spacy.load(MODEL_PATH)
@@ -158,13 +159,19 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     mentions = []
     type_ = RecognitionType.PATTERN_RECOGNISER_A
     for comment in comments:
-        results = recognise(type_, comment.body, comment.id)
-        if results:
-            comment.status = Status.TO_BE_PUBLISHED
-            comment.mentions = results
-            mentions.extend(results)
+        try:
+            results = recognise(type_, comment.body, comment.id)
+        except PreprocessingError as exc:
+            print(f"Caught exception for comment with id: '{comment.id}': {exc}")
+            comment.status = Status.ERROR
+            comment.note = exc
         else:
-            comment.status = Status.NO_MENTIONS
+            if results:
+                comment.status = Status.TO_BE_PUBLISHED
+                comment.mentions = results
+                mentions.extend(results)
+            else:
+                comment.status = Status.NO_MENTIONS
 
     with TableWriter(engine, session=session, purge=False) as writer:
         for comment in comments:

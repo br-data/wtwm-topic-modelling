@@ -17,9 +17,9 @@ def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[Recogn
     :param comment_id: id of comment, that is related to text
     """
     if type_ == RecognitionType.PATTERN_RECOGNISER_A:
-        results = PATTERN_RECOGNISER(text)
+        results = PATTERN_RECOGNISER(text, comment_id)
     elif type_ == RecognitionType.SPACY_MODEL_A:
-        results = recognise_mer(text)
+        results = recognise_mer(text, comment_id)
     else:
         raise NotImplementedError(f"Model type '{type_.value}' is not implemented yet.")
 

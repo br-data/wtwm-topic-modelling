@@ -4,11 +4,18 @@ import requests
 import re
 from re import Pattern
 
-def normalize_query_pattern(query: str) -> str:
+from src.exceptions import PreprocessingError
+
+
+def normalize_query_pattern(query: str, comment_id: str) -> str:
     """Normalize query string (for the use with a trie).
 
     :param query: query string to normalize
+    :param comment_id: id of the object the query belongs to
     """
+    if query is None:
+        raise PreprocessingError(f"Got no body for comment: {comment_id}")
+
     query = query.lower()
     #only_letters: Pattern = re.compile(r"([^A-Za-z-.])+")
     #query = re.sub(only_letters, query, " ")

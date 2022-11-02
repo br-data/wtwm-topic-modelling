@@ -22,6 +22,7 @@ class Status(Enum):
     TO_BE_PUBLISHED = "TO_BE_PUBLISHED"
     NO_MENTIONS = "NO_MENTIONS"
     WAIT_FOR_EVALUATION = "WAIT_FOR_EVALUATION"
+    ERROR = "ERROR"
 
 
 class MediaHouse(Enum):
@@ -129,6 +130,7 @@ class Comment(BASE):
     author_id = Column(Text, unique=False)  # comment author
     username = Column(Text, unique=False)  # technical name of the comment author
     created_at = Column(DateTime, unique=False)
+    note = Column(Text, unique=False)
     last_updated_at = Column(
         DateTime, unique=False
     )  # meant as database update of this comment

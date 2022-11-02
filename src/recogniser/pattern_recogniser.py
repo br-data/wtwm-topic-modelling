@@ -13,7 +13,7 @@ _PATTERNS = [
 PATTERNS = list(
     set(
         [
-            (normalize_query_pattern(pattern), type_)
+            (normalize_query_pattern(pattern, "Init patterns"), type_)
             for pattern, type_ in _PATTERNS if len(pattern) > 2
         ]
     )
@@ -54,14 +54,15 @@ class MentionPatternRecogniser:
         trie.make_automaton()
         return cls(patterns, trie)
 
-    def find_patterns(self, text: str, label: str = "MENTION") -> list[Optional[dict]]:
+    def find_patterns(self, text: str, comment_id: str, label: str = "MENTION") -> list[Optional[dict]]:
         """Find and return patterns found in paragraph.
 
         :param text: text might holding patterns
+        :param comment_id: id of the object the query belongs to
         :param label: recognition type label
         """
         hits = []
-        query = normalize_query_pattern(text)
+        query = normalize_query_pattern(text, comment_id)
         for end, (idx, pattern, type_) in list(self._trie.iter(query)):
             hits.append(
                 {
