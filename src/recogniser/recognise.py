@@ -1,4 +1,3 @@
-from enum import Enum
 import uuid
 
 from sqlalchemy.orm import relationship  # type: ignore
@@ -28,7 +27,7 @@ def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[Recogn
         RecognitionResult(
             id=str(uuid.uuid4()),
             comment_id=comment_id,
-            extracted_from=type_,
+            extracted_from=type_.value,
             **result
         ) for result in results
     ]

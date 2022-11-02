@@ -156,9 +156,9 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     session = sessionmaker()(bind=engine)
     comments = get_unprocessed(session)
     mentions = []
-    type_ = RecognitionType.SPACY_MODEL_A
+    type_ = RecognitionType.PATTERN_RECOGNISER_A
     for comment in comments:
-        results = rec_type.recognise(type_, comment.body, comment.id)
+        results = recognise(type_, comment.body, comment.id)
         if results:
             comment.status = Status.TO_BE_PUBLISHED
             comment.mentions = results

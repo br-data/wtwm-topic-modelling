@@ -83,7 +83,7 @@ class RecognitionResult(BASE):
     start = Column(Integer, unique=False)
     offset = Column(Integer, unique=False)
     label = Column(Text, unique=False)
-    extracted_from = Column(SQLEnum(RecognitionType), unique=False)
+    extracted_from = Column(Text, unique=False)
     comment = relationship(
         "Comment",
         back_populates="mentions",
@@ -99,7 +99,7 @@ class RecognitionResult(BASE):
             start=0,
             offset=16,
             label="mention",
-            extracted_from=RecognitionType.SPACY_MODEL_A,
+            extracted_from=RecognitionType.SPACY_MODEL_A.value,
         )
 
     def as_dict(self) -> dict[str, Union[int, str]]:
@@ -110,7 +110,7 @@ class RecognitionResult(BASE):
             start=self.start,
             offset=self.offset,
             label=self.label,
-            extracted_from=self.extracted_from.value,
+            extracted_from=self.extracted_from,
         )
 
 
