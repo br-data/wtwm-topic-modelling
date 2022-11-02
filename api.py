@@ -164,7 +164,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
         except PreprocessingError as exc:
             print(f"Caught exception for comment with id: '{comment.id}': {exc}")
             comment.status = Status.ERROR
-            comment.note = exc
+            comment.note = str(exc)
         else:
             if results:
                 comment.status = Status.TO_BE_PUBLISHED
