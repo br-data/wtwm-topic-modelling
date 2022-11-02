@@ -58,6 +58,7 @@ class MentionPatternRecogniser:
         """Find and return patterns found in paragraph.
 
         :param text: text might holding patterns
+        :param label: recognition type label
         """
         hits = []
         query = normalize_query_pattern(text)
