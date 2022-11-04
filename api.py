@@ -14,7 +14,7 @@ from src.api.request_models import (
     ExtractorRequestBody,
     MDRUpdateRequest,
     BRUpdateRequest,
-    FeedbackRequest
+    FeedbackRequest,
 )
 from src.models import Comment, MediaHouse, Status
 from src.tools import write_jsonlines_to_bucket
@@ -80,7 +80,9 @@ async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     else:
         msg = "Found no mentions."
 
-    return RecognitionResponse(status="ok", msg=msg, result=[r.as_dict() for r in results])
+    return RecognitionResponse(
+        status="ok", msg=msg, result=[r.as_dict() for r in results]
+    )
 
 
 @APP.get("/v1/get_mdr_comments", response_model=BaseResponse)
@@ -209,7 +211,7 @@ def send_comments_to_teams() -> BaseResponse:
 
 @APP.get("/v1/feedback", response_model=BaseResponse)
 def give_feedback(
-        query: dict[str, Any] = Depends(FeedbackRequest.query_template)
+    query: dict[str, Any] = Depends(FeedbackRequest.query_template)
 ) -> BaseResponse:
     """Reload a model from the bucket into this running API."""
     try:
@@ -229,9 +231,7 @@ def give_feedback(
             comment.status = config.choice
             writer.update(comment)
 
-        return BaseResponse(
-            status="ok", msg=f"Updated comment status with feedback."
-        )
+        return BaseResponse(status="ok", msg=f"Updated comment status with feedback.")
 
 
 @APP.get("/v1/reload_model", response_model=BaseResponse)

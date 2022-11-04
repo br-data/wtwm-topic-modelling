@@ -14,7 +14,8 @@ PATTERNS = list(
     set(
         [
             (normalize_query_pattern(pattern, "Init patterns"), type_)
-            for pattern, type_ in _PATTERNS if len(pattern) > 2
+            for pattern, type_ in _PATTERNS
+            if len(pattern) > 2
         ]
     )
 )
@@ -26,10 +27,10 @@ class MentionPatternRecogniser:
     """
 
     def __init__(
-            self,
-            patterns: list[Tuple[str, str]],
-            trie: Automaton,
-            normalize=False,
+        self,
+        patterns: list[Tuple[str, str]],
+        trie: Automaton,
+        normalize=False,
     ) -> None:
         """Init MentionPatternRecogniser.
 
@@ -42,7 +43,9 @@ class MentionPatternRecogniser:
         self._trie = trie
 
     @classmethod
-    def from_list(cls, patterns: list[Tuple[str, str]] = PATTERNS) -> "MentionPatternRecogniser":
+    def from_list(
+        cls, patterns: list[Tuple[str, str]] = PATTERNS
+    ) -> "MentionPatternRecogniser":
         """Build trie from list of patterns.
 
         :param patterns: list of patterns to recognize in text
@@ -54,7 +57,9 @@ class MentionPatternRecogniser:
         trie.make_automaton()
         return cls(patterns, trie)
 
-    def find_patterns(self, text: str, comment_id: str, label: str = "MENTION") -> list[Optional[dict]]:
+    def find_patterns(
+        self, text: str, comment_id: str, label: str = "MENTION"
+    ) -> list[Optional[dict]]:
         """Find and return patterns found in paragraph.
 
         :param text: text might holding patterns
@@ -69,7 +74,7 @@ class MentionPatternRecogniser:
                     "start": end - len(pattern) + 1,
                     "offset": len(pattern),
                     "body": pattern,
-                    "label": label
+                    "label": label,
                 }
             )
 

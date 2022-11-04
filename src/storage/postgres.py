@@ -88,7 +88,9 @@ class TableWriter(PSQLWriter):
         """
         if self._session is not None:
             if self.exists(entry):
-                print(f"Skipping entry of type {type(entry)} with id {entry.id} because it is already in db.")
+                print(
+                    f"Skipping entry of type {type(entry)} with id {entry.id} because it is already in db."
+                )
             else:
                 self._session.add(entry)
 

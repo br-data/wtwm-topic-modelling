@@ -17,8 +17,8 @@ def normalize_query_pattern(query: str, comment_id: str) -> str:
         raise PreprocessingError(f"Got no body for comment: {comment_id}")
 
     query = query.lower()
-    #only_letters: Pattern = re.compile(r"([^A-Za-z-.])+")
-    #query = re.sub(only_letters, query, " ")
+    # only_letters: Pattern = re.compile(r"([^A-Za-z-.])+")
+    # query = re.sub(only_letters, query, " ")
     return query
 
 

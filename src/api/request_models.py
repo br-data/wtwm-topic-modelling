@@ -106,7 +106,7 @@ class FeedbackRequest(BaseModel):
             None,
             title="Feeback choice identifier",
             description="Identifier value of the choice the user made",
-        )
+        ),
     ) -> dict[str, str]:
         """Define api query parameters.
 

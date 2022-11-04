@@ -9,7 +9,9 @@ from src.models import RecognitionResult, RecognitionType
 PATTERN_RECOGNISER = MentionPatternRecogniser.from_list()
 
 
-def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[RecognitionResult]:
+def recognise(
+    type_: RecognitionType, text: str, comment_id: str
+) -> list[RecognitionResult]:
     """Recognise mentions in a text.
 
     :param type_: recognition type
@@ -28,6 +30,7 @@ def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[Recogn
             id=str(uuid.uuid4()),
             comment_id=comment_id,
             extracted_from=type_.value,
-            **result
-        ) for result in results
+            **result,
+        )
+        for result in results
     ]

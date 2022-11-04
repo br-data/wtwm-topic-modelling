@@ -9,9 +9,7 @@ SPACY_MODEL = spacy.load(MODEL_PATH)
 
 
 def recognise_mer(
-        text: str,
-        comment_id: str,
-        model: Optional[SPACY_MODEL] = None
+    text: str, comment_id: str, model: Optional[SPACY_MODEL] = None
 ) -> list[dict[str, Union[str, int]]]:
     """Recognise mentions in text.
 
