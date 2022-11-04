@@ -1,8 +1,10 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 
 from fastapi import Query
+
+from src.models import Status
 
 DEFAULT_LOOKBACK = 12
 
@@ -87,3 +89,46 @@ class BRUpdateRequest(BaseModel):
         """
         lookback = query.get("lookback", DEFAULT_LOOKBACK)
         return cls(lookback=lookback)
+
+
+class FeedbackRequest(BaseModel):
+    id: str
+    choice: Status
+
+    @staticmethod
+    def query_template(
+        id: Optional[str] = Query(
+            None,
+            title="Comment ID",
+            description="ID of the comment the feedback is on",
+        ),
+        choice: Optional[Union[int, str]] = Query(
+            None,
+            title="Feeback choice identifier",
+            description="Identifier value of the choice the user made",
+        )
+    ) -> dict[str, str]:
+        """Define api query parameters.
+
+        :param : api query arguments
+
+        Note: This query definition is used for swagger documentation.
+        """
+        return {"id": id, "choice": str(choice).strip()}
+
+    @classmethod
+    def from_query(cls, query: dict[str, Any]) -> "FeedbackRequest":
+        """Init from api arguments.
+
+        :param query: api path query as dict
+        """
+        id_ = query["id"]
+        if id_ is None:
+            raise ValueError("Please specify comment ID.")
+
+        choice = query["choice"]
+        if choice is None:
+            raise ValueError("Please specify choice.")
+
+        choice = Status.from_choice(choice)
+        return cls(id=id_, choice=choice)

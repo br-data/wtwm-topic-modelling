@@ -69,6 +69,19 @@ class TableWriter(PSQLWriter):
         else:
             raise ValueError("Session not initialized.")
 
+    def get_comment(self, comment_id: str) -> Optional[Comment]:
+        """Find comment by id in database and return if found.
+
+        :param comment_id
+        """
+        result = self._session.query(Comment).filter(Comment.id == comment_id).all()
+        if result is None:
+            return None
+        elif result:
+            return result[0]
+        else:
+            return None
+
     def write(self, entry: POSTGRES_ENTRY_TYPES) -> None:
         """Add entry to current session.
         :param entry: entry to add

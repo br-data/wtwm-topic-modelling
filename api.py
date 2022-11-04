@@ -14,6 +14,7 @@ from src.api.request_models import (
     ExtractorRequestBody,
     MDRUpdateRequest,
     BRUpdateRequest,
+    FeedbackRequest
 )
 from src.models import Comment, MediaHouse, Status
 from src.tools import write_jsonlines_to_bucket
@@ -206,6 +207,33 @@ def send_comments_to_teams() -> BaseResponse:
     return BaseResponse(status="ok", msg=msg)
 
 
+@APP.get("/v1/feedback", response_model=BaseResponse)
+def give_feedback(
+        query: dict[str, Any] = Depends(FeedbackRequest.query_template)
+) -> BaseResponse:
+    """Reload a model from the bucket into this running API."""
+    try:
+        config = FeedbackRequest.from_query(query)
+    except (TypeError, ValueError) as exc:
+        msg = f"Query is illformed: '{exc}'"
+        raise HTTPException(status_code=ErrorCode.NOT_FOUND.value, detail=msg)
+    else:
+        engine = get_engine(POSTGRES_URI)
+        session = sessionmaker()(bind=engine)
+        with TableWriter(engine, session=session, purge=False) as writer:
+            comment = writer.get_comment(config.id)
+            if comment is None:
+                msg = f"No comment with id: '{config.id}'"
+                raise HTTPException(status_code=ErrorCode.NOT_FOUND.value, detail=msg)
+
+            comment.status = config.choice
+            writer.update(comment)
+
+        return BaseResponse(
+            status="ok", msg=f"Updated comment status with feedback."
+        )
+
+
 @APP.get("/v1/reload_model", response_model=BaseResponse)
 def reload_model() -> BaseResponse:
     """Reload a model from the bucket into this running API."""
@@ -213,7 +241,7 @@ def reload_model() -> BaseResponse:
         SPACY_MODEL = spacy.load(MODEL_PATH)
     except OSError as exc:
         msg = f"Couldn't find the model at: '{MODEL_PATH}' because '{exc}'"
-        raise HTTPException(status_code=ErrorCode.MODEL_NOT_FOUND.value, detail=msg)
+        raise HTTPException(status_code=ErrorCode.NOT_FOUND.value, detail=msg)
     else:
         return BaseResponse(
             status="ok", msg=f"Successfully reloaded model '{MODEL_PATH}'"

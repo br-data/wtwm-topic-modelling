@@ -24,6 +24,19 @@ class Status(Enum):
     WAIT_FOR_EVALUATION = "WAIT_FOR_EVALUATION"
     ERROR = "ERROR"
 
+    @staticmethod
+    def from_choice(choice: str) -> "Status":
+        """Map the choice.
+
+        :param choice: raw choice to be mapped
+        """
+        if choice == "0":
+            return Status.REJECTED
+        elif choice == "1":
+            return Status.ACCEPTED
+        else:
+            raise ValueError(f"Unknown choice: {choice}")
+
 
 class MediaHouse(Enum):
     MDR = "mdr"

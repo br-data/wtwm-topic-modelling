@@ -3,7 +3,8 @@ from enum import Enum
 
 
 class ErrorCode(Enum):
-    MODEL_NOT_FOUND = 404
+    NOT_FOUND = 404
+    UNPROCESSABLE_ENTITY = 422
 
 
 class BaseResponse(BaseModel):
