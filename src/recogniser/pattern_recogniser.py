@@ -265,7 +265,7 @@ def longest_in_group(group: list[dict]) -> dict:
     longest = group[0]
     longest_end = longest["start"] + longest["offset"]
     for e in group[1:]:
-        curr_end = e["start"] + e["end"]
+        curr_end = e["start"] + e["offset"]
         if curr_end >= longest_end:
             longest = e
 
