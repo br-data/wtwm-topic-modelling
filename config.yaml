@@ -43,6 +43,8 @@ run:
       value: sm://{{.projectId}}/wtwm-db-credential-path
     - name: MDR_TARGET
       value: sm://{{.projectId}}/wtwm-mdr-target
+    - name: BR_TARGET
+      value: sm://{{.projectId}}/wtwm-br-target
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
