@@ -83,7 +83,7 @@ def check_expiration_time(
           the same second.
     """
     filtered_ = []
-    now = datetime.now()
+    now = datetime.utcnow()
     not_older_than = now - timedelta(minutes=lookback_minutes)
     for comment in comments:
         if comment.created_at >= not_older_than:
