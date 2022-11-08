@@ -71,7 +71,9 @@ def request(
         return {}
 
 
-def check_expiration_time(comments: list[Comment], lookback_minutes: int) -> list[Comment]:
+def check_expiration_time(
+    comments: list[Comment], lookback_minutes: int
+) -> list[Comment]:
     """Filter all comments older than a lookback time.
 
     :param comments: list of comments to filter

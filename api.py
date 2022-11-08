@@ -204,10 +204,10 @@ def send_comments_to_teams() -> BaseResponse:
     with TableWriter(engine, session=session, purge=False) as writer:
         for media_house_id, _ in by_media_house.items():
             connector = TeamsConnector(MediaHouse.from_id(media_house_id))
-            #TODO switch back to media house related publishing. Now all comments are published to each media house
+            # TODO switch back to media house related publishing. Now all comments are published to each media house
             send_comments(connector, unpublished_comments, writer, MAX_NUMBER_PUBLISH)
 
-        #TODO set back to count per media house
+        # TODO set back to count per media house
         pub_buf = len(unpublished_comments)
 
     msg = f"Published {pub_buf} comments."

@@ -3,7 +3,10 @@ import uuid
 from sqlalchemy.orm import relationship  # type: ignore
 
 from src.recogniser.mer_recogniser import recognise_mer
-from src.recogniser.pattern_recogniser import MentionPatternRecogniser, MentionRegexRecogniser
+from src.recogniser.pattern_recogniser import (
+    MentionPatternRecogniser,
+    MentionRegexRecogniser,
+)
 from src.models import RecognitionResult, RecognitionType
 from settings import BASELINE_SOURCE, PATTERN_RECOGNISER_SOURCE
 

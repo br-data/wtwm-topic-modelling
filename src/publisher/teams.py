@@ -27,17 +27,15 @@ def _get_request_body(comments: list[Comment]) -> dict[str, list[dict[str, Any]]
     :param comments: list of comments to publish
     """
     return {
-        "data": [
-            {
-                "id": comment.id,
-                "comment": comment.body
-            } for comment in comments
-        ]
+        "data": [{"id": comment.id, "comment": comment.body} for comment in comments]
     }
 
 
 def send_comments(
-    connector: TeamsConnector, comments: list[Comment], writer: TableWriter, max_number_to_publish: int
+    connector: TeamsConnector,
+    comments: list[Comment],
+    writer: TableWriter,
+    max_number_to_publish: int,
 ) -> None:
     """Send comments to teams.
 
@@ -46,7 +44,7 @@ def send_comments(
     :param writer: database interface
     :param max_number_to_publish: max number of comments to publish each session
     """
-    for comment_entry in comments[:max_number_to_publish + 1]:
+    for comment_entry in comments[: max_number_to_publish + 1]:
         # send one comment at once for now to ensure db update of status
         connector.send([comment_entry])
         comment_entry.status = Status.WAIT_FOR_EVALUATION

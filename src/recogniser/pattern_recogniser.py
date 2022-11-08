@@ -29,9 +29,7 @@ class MentionPatternRecogniser:
         self._trie = trie
 
     @classmethod
-    def from_list(
-        cls, patterns: list[Tuple[str, str]]
-    ) -> "MentionPatternRecogniser":
+    def from_list(cls, patterns: list[Tuple[str, str]]) -> "MentionPatternRecogniser":
         """Build trie from list of patterns.
 
         :param patterns: list of patterns to recognize in text
@@ -129,11 +127,11 @@ class MentionRegexRecogniser:
         return cls(regexes)
 
     def find_mentions(
-            self,
-            text: str,
-            comment_id: str,
-            label: str = "MENTION",
-            apply_leftmost_longest: bool = True
+        self,
+        text: str,
+        comment_id: str,
+        label: str = "MENTION",
+        apply_leftmost_longest: bool = True,
     ) -> list[dict[str, Union[str, int]]]:
         """Find and return patterns found in text.
 
@@ -163,14 +161,20 @@ class MentionRegexRecogniser:
         else:
             return hits
 
-    def includes_mentions(self, text: str, comment_id: str, label: str = "MENTION") -> bool:
+    def includes_mentions(
+        self, text: str, comment_id: str, label: str = "MENTION"
+    ) -> bool:
         """True, if text inclues mentions, false otherwise.
 
         :param text: text might holding patterns
         :param comment_id: id of the object the query belongs to
         :param label: recognition type label
         """
-        return True if self.find_mentions(text, comment_id, label, apply_leftmost_longest=False) else False
+        return (
+            True
+            if self.find_mentions(text, comment_id, label, apply_leftmost_longest=False)
+            else False
+        )
 
     __call__ = find_mentions
 
