@@ -1,4 +1,5 @@
-from typing import Union
+from typing import Any
+
 from src.tools import request
 
 from src.models import MediaHouse, Comment, Status
@@ -9,88 +10,45 @@ class TeamsConnector:
     def __init__(self, media_house: MediaHouse):
         self.media_house = media_house
 
-    def _get_message_card(self, body: str) -> dict[str, Union[str, bool]]:
-        """Prepare publication in message card format
+    def send(self, comments: list[Comment]) -> None:
+        """Publish a list of comments to teams.
 
-        :param body: comment body to publish
-
-        Note: In order to send actionable messages one must use the legacy message card. Here is the documentation:
-
-        https://learn.microsoft.com/en-us/outlook/actionable-messages/message-card-reference
+        :param comments: list of comments to publish
         """
-        return {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "summary": "Feedback",
-            "title": "New direct mention was detected:",
-            "text": body,
-            "potentialAction": [
-                {
-                    "@type": "ActionCard",
-                    "name": "Feedback",
-                    "inputs": [
-                        {
-                            "@type": "MultichoiceInput",
-                            "id": "HumanLabel",
-                            "title": "In order to improve the detection, please give us feedback about the detection:",
-                            "isMultiSelect": "False",
-                            "style": "expanded",
-                            "choices": [
-                                {
-                                    "display": "There is a direct mention and the exact text is bolded.",
-                                    "value": "correct",
-                                },
-                                {
-                                    "display": "There is not direct mention at all.",
-                                    "value": "incorrect",
-                                },
-                                {
-                                    "display": "There is a direct mention but the exact text is not bolded.",
-                                    "value": "incorrect_bold",
-                                },
-                            ],
-                        },
-                        {
-                            "@type": "TextInput",
-                            "id": "mentionText",
-                            "isMultiline": True,
-                            "title": "exact mention text",
-                        },
-                    ],
-                    "actions": [
-                        {
-                            "@type": "HttpPOST",
-                            "name": "Submit",
-                            "isPrimary": True,
-                            "target": self.media_house.get_feedback_target(),
-                        }
-                    ],
-                }
-            ],
-        }
-
-    def send(self, comment_body: str) -> None:
-        """Publish a comment to a teams channel.
-
-        :param comment_body: comment body to publish
-        """
-        request_body = self._get_message_card(comment_body)
+        request_body = _get_request_body(comments)
         _ = request(self.media_house.get_target(), body=request_body)
 
     __call__ = send
 
 
+def _get_request_body(comments: list[Comment]) -> dict[str, list[dict[str, Any]]]:
+    """Assemble request body for publication.
+
+    :param comments: list of comments to publish
+    """
+    return {
+        "data": [
+            {
+                "id": comment.id,
+                "comment": comment.body
+            } for comment in comments
+        ]
+    }
+
+
 def send_comments(
-    connector: TeamsConnector, comments: list[Comment], writer: TableWriter
+    connector: TeamsConnector, comments: list[Comment], writer: TableWriter, max_number_to_publish: int
 ) -> None:
     """Send comments to teams.
 
     :param connector: teams connection interfacel
     :param comments: comments to send
     :param writer: database interface
+    :param max_number_to_publish: max number of comments to publish each session
     """
-    for comment_entry in comments:
-        connector.send(comment_entry.body)
+    for comment_entry in comments[:max_number_to_publish + 1]:
+        # send one comment at once for now to ensure db update of status
+        connector.send([comment_entry])
         comment_entry.status = Status.WAIT_FOR_EVALUATION
         # update status everytime to prevent status update fail in case of chrash
         # if necessary build pub/sub after prototype phase

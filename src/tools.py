@@ -1,10 +1,14 @@
 from typing import Any, Optional
 import jsonlines
 import requests
+from requests.exceptions import JSONDecodeError
+from datetime import datetime, timedelta
+import json
 import re
 from re import Pattern
 
 from src.exceptions import PreprocessingError
+from src.models import Comment
 
 
 def normalize_query_pattern(query: str, comment_id: str) -> str:
@@ -61,4 +65,26 @@ def request(
     headers.update({"content-type": "application/json"})
     response = requests.request(method, url, json=body, params=params, headers=headers)
     response.raise_for_status()
-    return response.json()
+    try:
+        return response.json()
+    except JSONDecodeError:
+        return {}
+
+
+def check_expiration_time(comments: list[Comment], lookback_minutes: int) -> list[Comment]:
+    """Filter all comments older than a lookback time.
+
+    :param comments: list of comments to filter
+    :param lookback_minutes: number of minutes to look back in time from now
+
+    Note: Filter criteria is the timestamp 'created_at' because 'last_updated_at' by hold alot of comments updated
+          the same second.
+    """
+    filtered_ = []
+    now = datetime.now()
+    not_older_than = now - timedelta(minutes=lookback_minutes)
+    for comment in comments:
+        if comment.created_at >= not_older_than:
+            filtered_.append(comment)
+
+    return filtered_

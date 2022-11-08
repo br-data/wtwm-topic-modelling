@@ -140,6 +140,7 @@ def get_unpublished(session) -> list[Comment]:
         session.query(Comment)
         .join(RecognitionResult)
         .filter(Comment.status == Status.TO_BE_PUBLISHED)
+        .order_by(Comment.created_at.desc())
         .all()
     )
 

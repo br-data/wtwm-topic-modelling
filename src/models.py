@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship  # type: ignore
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Text
 from sqlalchemy import Enum as SQLEnum
 
-from settings import MDR_TARGET, TEST_TARGET, TEST_FEEDBACK_TARGET, MDR_FEEDBACK_TARGET
+from settings import MDR_TARGET, BR_TARGET, TEST_TARGET, TEST_FEEDBACK_TARGET, MDR_FEEDBACK_TARGET
 
 
 BASE = declarative_base()
@@ -67,6 +67,8 @@ class MediaHouse(Enum):
             return TEST_TARGET
         elif self == MediaHouse.MDR:
             return MDR_TARGET
+        elif self == MediaHouse.BR:
+            return BR_TARGET
         else:
             raise NotImplementedError(f"Target for {self.value} is not available.")
 

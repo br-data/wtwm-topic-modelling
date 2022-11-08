@@ -17,7 +17,7 @@ from src.api.request_models import (
     FeedbackRequest,
 )
 from src.models import Comment, MediaHouse, Status
-from src.tools import write_jsonlines_to_bucket
+from src.tools import write_jsonlines_to_bucket, check_expiration_time
 from src.recogniser.recognise import RecognitionType, recognise
 from src.mdr.preprocess import preprocess_mdr_comment
 from src.mdr.get_comments import MDRCommentGetter
@@ -32,7 +32,7 @@ from src.storage.postgres import (
     get_unpublished,
     get_unprocessed,
 )
-from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI
+from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
 from src.exceptions import PreprocessingError
 
 
@@ -189,24 +189,30 @@ def send_comments_to_teams() -> BaseResponse:
     """Get unsend comments and publish them to teams."""
     engine = get_engine(POSTGRES_URI)
     session = sessionmaker()(bind=engine)
-    comments = get_unpublished(session)
-    if not comments:
+    unpublished_comments = get_unpublished(session)
+    if not unpublished_comments:
         msg = "No new comments to publish."
         return BaseResponse(status="ok", msg=msg)
 
+    lookback_minutes = 5
+    unpublished_comments = check_expiration_time(unpublished_comments, lookback_minutes)
     by_media_house = defaultdict(list)
-    for comment in comments:
+    for comment in unpublished_comments:
         by_media_house[comment.media_house.value].append(comment)
 
     pub_buf = 0
     with TableWriter(engine, session=session, purge=False) as writer:
-        for media_house_id, comments in by_media_house.items():
+        for media_house_id, _ in by_media_house.items():
             connector = TeamsConnector(MediaHouse.from_id(media_house_id))
-            send_comments(connector, comments, writer)
-            pub_buf += len(comments)
+            #TODO switch back to media house related publishing. Now all comments are published to each media house
+            send_comments(connector, unpublished_comments, writer, MAX_NUMBER_PUBLISH)
+
+        #TODO set back to count per media house
+        pub_buf = unpublished_comments
 
     msg = f"Published {pub_buf} comments."
     return BaseResponse(status="ok", msg=msg)
+
 
 
 @APP.get("/v1/feedback", response_model=BaseResponse)
