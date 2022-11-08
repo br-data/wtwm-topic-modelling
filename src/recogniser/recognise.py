@@ -3,10 +3,12 @@ import uuid
 from sqlalchemy.orm import relationship  # type: ignore
 
 from src.recogniser.mer_recogniser import recognise_mer
-from src.recogniser.pattern_recogniser import MentionPatternRecogniser
+from src.recogniser.pattern_recogniser import MentionPatternRecogniser, MentionRegexRecogniser
 from src.models import RecognitionResult, RecognitionType
+from settings import BASELINE_SOURCE
 
 PATTERN_RECOGNISER = MentionPatternRecogniser.from_list()
+BASELINE_RECOGNISER = MentionRegexRecogniser.from_file(BASELINE_SOURCE)
 
 
 def recognise(
@@ -22,6 +24,8 @@ def recognise(
         results = PATTERN_RECOGNISER(text, comment_id)
     elif type_ == RecognitionType.SPACY_MODEL_A:
         results = recognise_mer(text, comment_id)
+    elif type_ == RecognitionType.PATTERN_BASELINE:
+        results = BASELINE_RECOGNISER(text, comment_id)
     else:
         raise NotImplementedError(f"Model type '{type_.value}' is not implemented yet.")
 

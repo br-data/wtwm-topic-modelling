@@ -24,3 +24,6 @@ POSTGRES_IP = os.environ["DATABASE_ADDRESS"]
 POSTGRES_USER = os.environ["DATABASE_USER"]
 POSTGRES_PASS = os.environ["DATABASE_PASSWORD"]
 POSTGRES_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASS}@{POSTGRES_IP}"
+
+# recogniser settings
+BASELINE_SOURCE = "model/baseline_regex_collection.txt"

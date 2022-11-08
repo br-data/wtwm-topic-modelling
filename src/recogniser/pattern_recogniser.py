@@ -85,6 +85,87 @@ class MentionPatternRecogniser:
     __call__ = find_patterns
 
 
+class MentionRegexRecogniser:
+    """
+    Extract known mentions by regex from text
+    """
+
+    def __init__(self, regexes: list[Pattern]) -> None:
+        """Init MentionRegexRecogniser.
+
+        :param regexes: list of regex patterns
+        """
+        self._regexes = regexes
+
+    @classmethod
+    def from_file(cls, path: str) -> "MentionRegexRecogniser":
+        """Build trie from list of patterns.
+
+        :param path: path to regex source file
+        """
+        regexes = []
+        with open(path, "r") as handle:
+            for pattern in handle.read().split("\n"):
+                pattern = pattern.strip()
+                if not pattern:
+                    # empty line
+                    continue
+
+                if pattern.startswith("#"):
+                    # is comment
+                    continue
+
+                regexes.append(re.compile(pattern, flags=re.IGNORECASE))
+
+        return cls(regexes)
+
+    def find_mentions(
+            self,
+            text: str,
+            comment_id: str,
+            label: str = "MENTION",
+            apply_leftmost_longest: bool = True
+    ) -> list[dict[str, Union[str, int]]]:
+        """Find and return patterns found in text.
+
+        :param text: text might holding patterns
+        :param comment_id: id of the object the query belongs to
+        :param label: recognition type label
+        :param apply_leftmost_longest: perform left modest longest postprocessing
+        """
+        hits = []
+        query = normalize_query_pattern(text, comment_id)
+        for regex in self._regexes:
+            for match in regex.finditer(query):
+                pattern = match.group()
+                hits.append(
+                    {
+                        "start": match.start(),
+                        "offset": len(pattern),
+                        "body": pattern,
+                        "label": label,
+                    }
+                )
+
+        if apply_leftmost_longest:
+            longest_hits = leftmost_longest(hits) if hits else []
+            longest_hits_filtered = filter_in_word_hits(longest_hits, query)
+            return longest_hits_filtered
+        else:
+            return hits
+
+    def includes_mentions(self, text: str, comment_id: str, label: str = "MENTION") -> bool:
+        """True, if text inclues mentions, false otherwise.
+
+        :param text: text might holding patterns
+        :param comment_id: id of the object the query belongs to
+        :param label: recognition type label
+        """
+        return True if self.find_mentions(text, comment_id, label, apply_leftmost_longest=False) else False
+
+    __call__ = find_mentions
+
+
 def leftmost_longest(hits: list[dict]) -> list[dict]:
     """Filter the leftmost longest match.
 

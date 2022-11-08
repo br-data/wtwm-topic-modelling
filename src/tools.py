@@ -33,6 +33,15 @@ def write_jsonlines_to_bucket(path: str, lines: list[dict]) -> None:
             handle.write(line)
 
 
+def read_jsonlines(path: str) -> list[dict]:
+    """Read jsonlines from file.
+
+    :param path: path to file
+    """
+    with jsonlines.open(path, "r") as handle:
+        return [line for line in handle]
+
+
 def request(
     url: str,
     params: Optional[dict[str, Any]] = None,

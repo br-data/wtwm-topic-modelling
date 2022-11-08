@@ -87,6 +87,7 @@ class RecognitionType(Enum):
     ANNOTATION = "annotation"
     SPACY_MODEL_A = "bugg_model_v1"
     PATTERN_RECOGNISER_A = "pattern_recogniser_v1"
+    PATTERN_BASELINE = "regex_baseline"
 
 
 class RecognitionResult(BASE):

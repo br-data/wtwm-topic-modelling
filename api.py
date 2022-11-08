@@ -67,7 +67,7 @@ async def redirect():
 @APP.post("/v1/find_mentions", response_model=RecognitionResponse)
 async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     """Find mentions of the editorial team in a comment."""
-    type_ = RecognitionType.PATTERN_RECOGNISER_A
+    type_ = RecognitionType.PATTERN_BASELINE
     results = recognise(
         type_,
         body.text,
@@ -160,7 +160,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     session = sessionmaker()(bind=engine)
     comments = get_unprocessed(session)
     mentions = []
-    type_ = RecognitionType.PATTERN_RECOGNISER_A
+    type_ = RecognitionType.PATTERN_BASELINE
     for comment in comments:
         try:
             results = recognise(type_, comment.body, comment.id)
