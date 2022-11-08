@@ -1,4 +1,5 @@
-from typing import Optional, Tuple
+import re
+from typing import Optional, Tuple, Pattern, Union
 
 import ahocorasick
 from ahocorasick import Automaton
