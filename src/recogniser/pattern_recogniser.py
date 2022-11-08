@@ -6,21 +6,6 @@ from ahocorasick import Automaton
 from src.tools import normalize_query_pattern
 
 
-_PATTERNS = [
-    ("BR", "unspecified"),
-    ("MDR", "unspecified"),
-]
-PATTERNS = list(
-    set(
-        [
-            (normalize_query_pattern(pattern, "Init patterns"), type_)
-            for pattern, type_ in _PATTERNS
-            if len(pattern) > 2
-        ]
-    )
-)
-
-
 class MentionPatternRecogniser:
     """
     Extract known mentioning patterns from text
@@ -44,7 +29,7 @@ class MentionPatternRecogniser:
 
     @classmethod
     def from_list(
-        cls, patterns: list[Tuple[str, str]] = PATTERNS
+        cls, patterns: list[Tuple[str, str]]
     ) -> "MentionPatternRecogniser":
         """Build trie from list of patterns.
 
@@ -56,6 +41,29 @@ class MentionPatternRecogniser:
 
         trie.make_automaton()
         return cls(patterns, trie)
+
+    @classmethod
+    def from_file(cls, path: str) -> "MentionPatternRecogniser":
+        """Build trie from list of patterns.
+
+        :param path: pattern source path
+        """
+        with open(path, "r") as handle:
+            patterns = set()
+            for line in handle.read().split("\n"):
+                line = line.strip()
+                if not line:
+                    # empty line
+                    continue
+
+                if line.startswith("#"):
+                    # is comment
+                    continue
+
+                [pattern, type_] = line.split(",")
+                patterns.add((normalize_query_pattern(pattern, "Init patterns"), type_))
+
+            return cls.from_list(list(patterns))
 
     def find_patterns(
         self, text: str, comment_id: str, label: str = "MENTION"

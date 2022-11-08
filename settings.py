@@ -27,3 +27,4 @@ POSTGRES_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASS}@{POSTGRES_IP}"
 
 # recogniser settings
 BASELINE_SOURCE = "model/baseline_regex_collection.txt"
+PATTERN_RECOGNISER_SOURCE = "model/trie_patterns.txt"

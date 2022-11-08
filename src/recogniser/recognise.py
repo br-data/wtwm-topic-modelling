@@ -5,9 +5,9 @@ from sqlalchemy.orm import relationship  # type: ignore
 from src.recogniser.mer_recogniser import recognise_mer
 from src.recogniser.pattern_recogniser import MentionPatternRecogniser, MentionRegexRecogniser
 from src.models import RecognitionResult, RecognitionType
-from settings import BASELINE_SOURCE
+from settings import BASELINE_SOURCE, PATTERN_RECOGNISER_SOURCE
 
-PATTERN_RECOGNISER = MentionPatternRecogniser.from_list()
+PATTERN_RECOGNISER = MentionPatternRecogniser.from_file(PATTERN_RECOGNISER_SOURCE)
 BASELINE_RECOGNISER = MentionRegexRecogniser.from_file(BASELINE_SOURCE)
 
 
