@@ -208,11 +208,10 @@ def send_comments_to_teams() -> BaseResponse:
             send_comments(connector, unpublished_comments, writer, MAX_NUMBER_PUBLISH)
 
         #TODO set back to count per media house
-        pub_buf = unpublished_comments
+        pub_buf = len(unpublished_comments)
 
     msg = f"Published {pub_buf} comments."
     return BaseResponse(status="ok", msg=msg)
-
 
 
 @APP.get("/v1/feedback", response_model=BaseResponse)
