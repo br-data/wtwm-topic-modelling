@@ -194,7 +194,7 @@ def send_comments_to_teams() -> BaseResponse:
         msg = "No new comments to publish."
         return BaseResponse(status="ok", msg=msg)
 
-    lookback_minutes = 5
+    lookback_minutes = 15
     unpublished_comments = check_expiration_time(unpublished_comments, lookback_minutes)
     by_media_house = defaultdict(list)
     for comment in unpublished_comments:
