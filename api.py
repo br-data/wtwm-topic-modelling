@@ -196,13 +196,8 @@ def send_comments_to_teams() -> BaseResponse:
 
     lookback_minutes = 15
     unpublished_comments = check_expiration_time(unpublished_comments, lookback_minutes)
-    by_media_house = defaultdict(list)
-    for comment in unpublished_comments:
-        by_media_house[comment.media_house.value].append(comment)
-
-    pub_buf = 0
     with TableWriter(engine, session=session, purge=False) as writer:
-        for media_house_id, _ in by_media_house.items():
+        for media_house_id in ["mdr", "br"]:
             connector = TeamsConnector(MediaHouse.from_id(media_house_id))
             # TODO switch back to media house related publishing. Now all comments are published to each media house
             send_comments(connector, unpublished_comments, writer, MAX_NUMBER_PUBLISH)
