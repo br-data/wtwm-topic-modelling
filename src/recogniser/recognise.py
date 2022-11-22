@@ -14,9 +14,7 @@ PATTERN_RECOGNISER = MentionPatternRecogniser.from_file(PATTERN_RECOGNISER_SOURC
 BASELINE_RECOGNISER = MentionRegexRecogniser.from_file(BASELINE_SOURCE)
 
 
-def recognise(
-    type_: RecognitionType, text: str, comment_id: str
-) -> list[RecognitionResult]:
+def recognise(type_: RecognitionType, text: str, comment_id: str) -> list[RecognitionResult]:
     """Recognise mentions in a text.
 
     :param type_: recognition type
@@ -41,3 +39,13 @@ def recognise(
         )
         for result in results
     ]
+
+
+def includes_mentions(type_: RecognitionType, text: str, comment_id: str) -> bool:
+    """True, if least one mention is included in the text, false otherwise.
+
+    :param type_: recognition type
+    :param text: text, that might hold mentions
+    :param comment_id: id of comment, that is related to text
+    """
+    return True if recognise(type_, text, comment_id) else False
