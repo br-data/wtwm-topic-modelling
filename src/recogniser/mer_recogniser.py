@@ -1,11 +1,11 @@
 from typing import Optional, Union
-from settings import MODEL_PATH
+from settings import BUGG_MODEL_V1_PATH
 
 import spacy
 
 from src.tools import normalize_query_pattern
 
-SPACY_MODEL = spacy.load(MODEL_PATH)
+SPACY_MODEL = spacy.load(BUGG_MODEL_V1_PATH)
 
 
 def recognise_mer(

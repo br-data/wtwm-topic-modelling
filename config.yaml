@@ -31,8 +31,6 @@ run:
       value: "/data/storage/backup/"
     - name: BASELINE_SOURCE_FILE
       value: "/data/storage/baseline_regex_collection.txt"
-    - name: TRIE_PATTERN_SOURCE_FILE
-      value: "/data/storage/trie_patterns.txt"
     - name: MDR_COMMENT_ENDPOINT_TOKEN
       value: sm://{{.projectId}}/mdr-comment-endpoint-bearer
     - name: MDR_COMMENT_ENDPOINT

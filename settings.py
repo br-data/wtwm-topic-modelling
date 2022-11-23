@@ -8,9 +8,6 @@ BACKUP_PATH = os.environ.get("BACKUP_PATH", "model/backup/")
 BASELINE_SOURCE = os.environ.get(
     "BASELINE_SOURCE_FILE", "model/baseline_regex_collection.txt"
 )
-PATTERN_RECOGNISER_SOURCE = os.environ.get(
-    "TRIE_PATTERN_SOURCE_FILE", "model/trie_patterns.txt"
-)
 
 # comment source api settings
 MDR_COMMENT_ENDPOINT_TOKEN = os.environ["MDR_COMMENT_ENDPOINT_TOKEN"]

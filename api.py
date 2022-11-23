@@ -18,7 +18,7 @@ from src.api.request_models import (
 )
 from src.models import Comment, MediaHouse, Status
 from src.tools import write_jsonlines_to_bucket, check_expiration_time
-from src.recogniser.recognise import RecognitionType, recognise
+from src.finder import ModelType, find_mention
 from src.mdr.preprocess import preprocess_mdr_comment
 from src.mdr.get_comments import MDRCommentGetter
 from src.br.get_comments import BRCommentGetter
@@ -32,11 +32,10 @@ from src.storage.postgres import (
     get_unpublished,
     get_unprocessed,
 )
-from settings import MODEL_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
+from settings import BUGG_MODEL_V1_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
 from src.exceptions import PreprocessingError
 
-
-SPACY_MODEL = spacy.load(MODEL_PATH)
+SPACY_MODEL = spacy.load(BUGG_MODEL_V1_PATH)
 APP = FastAPI(
     title="WTWM mention extractor",
     description="Recognise mentions of the editorial team in a given text.",
@@ -163,7 +162,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     type_ = RecognitionType.PATTERN_BASELINE
     for comment in comments:
         try:
-            results = recognise(type_, comment.body, comment.id)
+            results = find_mention(type_, comment.body, comment.id)
         except PreprocessingError as exc:
             print(f"Caught exception for comment with id: '{comment.id}': {exc}")
             comment.status = Status.ERROR
@@ -238,13 +237,13 @@ def give_feedback(
 def reload_model() -> BaseResponse:
     """Reload a model from the bucket into this running API."""
     try:
-        SPACY_MODEL = spacy.load(MODEL_PATH)
+        SPACY_MODEL = spacy.load(BUGG_MODEL_V1_PATH)
     except OSError as exc:
-        msg = f"Couldn't find the model at: '{MODEL_PATH}' because '{exc}'"
+        msg = f"Couldn't find the model at: '{BUGG_MODEL_V1_PATH}' because '{exc}'"
         raise HTTPException(status_code=ErrorCode.NOT_FOUND.value, detail=msg)
     else:
         return BaseResponse(
-            status="ok", msg=f"Successfully reloaded model '{MODEL_PATH}'"
+            status="ok", msg=f"Successfully reloaded model '{BUGG_MODEL_V1_PATH}'"
         )
 
 
