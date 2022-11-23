@@ -14,3 +14,7 @@ class BaseResponse(BaseModel):
 
 class RecognitionResponse(BaseResponse):
     result: list[dict]
+
+
+class LatestMentionsResponse(BaseResponse):
+    result: list[dict]

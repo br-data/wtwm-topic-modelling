@@ -8,7 +8,7 @@ from datetime import datetime
 import spacy
 import uuid
 
-from src.api.response_models import RecognitionResponse, ErrorCode, BaseResponse
+from src.api.response_models import RecognitionResponse, ErrorCode, BaseResponse, LatestMentionsResponse
 from src.api.request_models import (
     ExtractorRequestBody,
     MDRUpdateRequest,
@@ -30,6 +30,7 @@ from src.storage.postgres import (
     sessionmaker,
     get_unpublished,
     get_unprocessed,
+    get_latest_mentions
 )
 from settings import BUGG_MODEL_V1_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
 from src.exceptions import PreprocessingError
@@ -205,6 +206,20 @@ def send_comments_to_teams() -> BaseResponse:
 
     msg = f"Published {pub_buf} comments."
     return BaseResponse(status="ok", msg=msg)
+
+
+@APP.get("/v1/get_latest_mentions", response_model=LatestMentionsResponse)
+def get_mentions() -> LatestMentionsResponse:
+    """Return a list of the latest comments with mentions."""
+    engine = get_engine(POSTGRES_URI)
+    session = sessionmaker()(bind=engine)
+    latest_mentions = get_latest_mentions(session)
+    if not latest_mentions:
+        msg = "No comments with mentions lately."
+        return BaseResponse(status="ok", msg=msg)
+
+    msg = f"Found {len(latest_mentions)} comments with mentions."
+    return LatestMentionsResponse(status="ok", msg=msg, result=latest_mentions)
 
 
 @APP.get("/v1/feedback", response_model=BaseResponse)
