@@ -1,19 +1,6 @@
 isEnabled: true
 image:
-  imageFrom: ubuntu:20.04
-build:
-  command: "TZ=Europe/Berlin \
-            && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-            && echo $TZ > /etc/timezone \
-            && apt-get -y update \
-            && apt-get -y install locales \
-            && sed -i -e 's/# de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/' /etc/locale.gen \
-            && locale-gen \
-            && apt-get -y install python3.9 python3.9-venv \
-            && mkdir /opt/venv
-            && python3.9 -m venv /opt/venv
-            && /opt/venv/bin/python3.9 -m pip install --upgrade pip \
-            && /opt/venv/bin/python3.9 -m pip install -r requirements.txt"
+  imageFrom: europe-west3-docker.pkg.dev/brdata-dev/cloud-deploy-images/wtwm-application-base-image
 run:
   command: /opt/venv/bin/python3.9 -m uvicorn api:APP --host 0.0.0.0 --port 3000
   envs:
