@@ -1,7 +1,6 @@
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
-    AutoConfig,
     pipeline,
 )
 
