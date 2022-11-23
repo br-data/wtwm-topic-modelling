@@ -78,6 +78,7 @@ class RecognitionType(Enum):
     SPACY_MODEL_A = "bugg_model_v1"
     PATTERN_RECOGNISER_A = "pattern_recogniser_v1"
     PATTERN_BASELINE = "regex_baseline"
+    GPT2 = "gpt2"
 
 
 class RecognitionResult(BASE):
