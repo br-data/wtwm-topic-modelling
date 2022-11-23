@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.orm import relationship  # type: ignore
 
 from src.recogniser.mer_recogniser import recognise_mer
-from src.recogniser.pattern_recogniser import  MentionRegexRecogniser
+from src.recogniser.pattern_recogniser import MentionRegexRecogniser
 from src.classifier.gpt2 import GPT2
 from src.models import RecognitionResult, ModelType
 from settings import BASELINE_SOURCE
@@ -12,7 +12,9 @@ BASELINE_RECOGNISER = MentionRegexRecogniser.from_file(BASELINE_SOURCE)
 GPT2_CLASSIFIER = GPT2()
 
 
-def find_mention(type_: ModelType, text: str, comment_id: str) -> list[RecognitionResult]:
+def find_mention(
+    type_: ModelType, text: str, comment_id: str
+) -> list[RecognitionResult]:
     """Recognise mentions in a text.
 
     :param type_: model type
@@ -30,12 +32,7 @@ def find_mention(type_: ModelType, text: str, comment_id: str) -> list[Recogniti
             # Classification doesn't point to text position but classifies the whole text.
             # We add a dummy text position to fit to allow the result format to fit recognition and classification
             results.append(
-                {
-                    "start": -1,
-                    "offset": 0,
-                    "body": "text",
-                    "label": "MENTION"
-                }
+                {"start": -1, "offset": 0, "body": "text", "label": "MENTION"}
             )
     else:
         raise NotImplementedError(f"Model type '{type_.value}' is not implemented yet.")

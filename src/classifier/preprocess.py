@@ -8,8 +8,8 @@ POINTS = re.compile(r"\.+")
 LINES = re.compile(r"--+")
 _200D = re.compile(r"\u200D")
 FORMATTING_FRAGMENTS = [
-    POINTS,              # as in "....bin auch schon " angespannt"....😖🤢"
-    LINES,               # as in "---- "Der Ertrag"
+    POINTS,  # as in "....bin auch schon " angespannt"....😖🤢"
+    LINES,  # as in "---- "Der Ertrag"
     _200D,
 ]
 GAP = re.compile(r"\s\s+")
@@ -44,7 +44,9 @@ def remove_html_tags(text: str, regex: Pattern = REMOVE_HTML) -> str:
     return re.sub(regex, " ", text)
 
 
-def remove_formatting_fragments(text: str, regexes: list[Pattern] = FORMATTING_FRAGMENTS) -> str:
+def remove_formatting_fragments(
+    text: str, regexes: list[Pattern] = FORMATTING_FRAGMENTS
+) -> str:
     """Remove formatting fragments from text.
 
     :param text: raw text
@@ -105,5 +107,5 @@ def remove_emojis(text: str) -> str:
         no_currency_symbols=True,
         no_punct=False,
         no_emoji=True,
-        lang="de"
+        lang="de",
     )

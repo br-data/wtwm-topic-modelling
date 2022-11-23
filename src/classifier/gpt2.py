@@ -18,8 +18,12 @@ class GPT2:
         self._model_path = model_path
         self._tokenizer = AutoTokenizer.from_pretrained(self._model_path)
         self._tokenizer.pad_token = self._tokenizer.eos_token
-        self._model = AutoModelForSequenceClassification.from_pretrained(self._model_path)
-        self._pipe = pipeline("text-classification", model=self._model, tokenizer=self._tokenizer)
+        self._model = AutoModelForSequenceClassification.from_pretrained(
+            self._model_path
+        )
+        self._pipe = pipeline(
+            "text-classification", model=self._model, tokenizer=self._tokenizer
+        )
 
     def classify(self, text: str, preprocess_text: bool = True) -> bool:
         """True, if text contains mentions, false otherwise.
