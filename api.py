@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import uvicorn
 from datetime import datetime
-from collections import defaultdict
 
 import spacy
 import uuid
@@ -66,8 +65,8 @@ async def redirect():
 @APP.post("/v1/find_mentions", response_model=RecognitionResponse)
 async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     """Find mentions of the editorial team in a comment."""
-    type_ = RecognitionType.PATTERN_BASELINE
-    results = recognise(
+    type_ = ModelType.GPT2
+    results = find_mention(
         type_,
         body.text,
         str(uuid.uuid4()),
@@ -159,7 +158,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     session = sessionmaker()(bind=engine)
     comments = get_unprocessed(session)
     mentions = []
-    type_ = RecognitionType.PATTERN_BASELINE
+    type_ = ModelType.GPT2
     for comment in comments:
         try:
             results = find_mention(type_, comment.body, comment.id)
