@@ -153,7 +153,7 @@ def get_unprocessed(session) -> list[Comment]:
     return session.query(Comment).filter(Comment.status == Status.TO_BE_PROCESSED).all()
 
 
-def get_latest_mentions(session, max_: int = 5) -> list[Optional[dict]]:
+def get_latest_mentions(session, max_: int = 4) -> list[Optional[dict]]:
     """Get latest, approved comments with mentions.
 
     :param session: running postgress connection
