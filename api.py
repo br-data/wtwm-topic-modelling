@@ -41,20 +41,22 @@ APP = FastAPI(
     description="Recognise mentions of the editorial team in a given text.",
     version="0.0.1",
 )
+
+ORIGINS = [
+    "https://interaktiv.brdata-dev.de",
+    "https://interaktiv.br.de",
+    "http://localhost:8080",
+    "http://localhost",
+    "http://0.0.0.0:8080",
+    "http://0.0.0.0",
+]
+
 APP.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://interaktiv.brdata-dev.de",
-        "https://interaktiv.br.de",
-        "http://localhost:8080",
-        "http://localhost",
-        "http://0.0.0.0:8080",
-        "http://0.0.0.0",
-    ],
-    allow_credentials=False,
+    allow_origins=ORIGINS,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
 )
 
 

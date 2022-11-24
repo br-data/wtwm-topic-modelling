@@ -12,6 +12,8 @@ run:
       value: "de_DE.UTF-8"
     - name: TZ
       value: "CET"
+    - name: FORWARDED_ALLOW_IPS
+      value: '*'
     - name: GPT2_MODEL_PATH
       value: "/data/storage/gpt2/"
     - name: BUGG_MODEL_V1_PATH
