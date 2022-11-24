@@ -43,7 +43,12 @@ APP = FastAPI(
 )
 APP.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://interaktiv.brdata-dev.de",
+        "https://interaktiv.br.de",
+        "http://localhost:8080",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
