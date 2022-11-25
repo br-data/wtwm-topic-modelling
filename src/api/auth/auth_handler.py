@@ -43,10 +43,11 @@ def decodeJWT(
     """
     try:
         decoded_token = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        if all([
-            decoded_token["expires"] >= time.time(),
-            decoded_token["username"] == username,
-            decoded_token["password"] == password]):
+        if all(
+            [
+                decoded_token["expires"] >= time.time(),
+                decoded_token["password"] == password
+            ]):
             return decoded_token
 
         return None
