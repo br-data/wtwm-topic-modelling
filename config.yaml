@@ -40,6 +40,10 @@ run:
       value: sm://{{.projectId}}/wtwm-br-target
     - name: TEST_TARGET
       value: sm://{{.projectId}}/wtwm-test-target
+    - name: WTWM_API_USER
+      value: sm://{{.projectId}}/wtwm-api-user
+    - name: WTWM_API_PASS
+      value: sm://{{.projectId}}/wtwm-api-pass-target
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
