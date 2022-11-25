@@ -49,7 +49,6 @@ run:
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
-  inSecure: true
   database:
     type: postgresql
     size: 15
