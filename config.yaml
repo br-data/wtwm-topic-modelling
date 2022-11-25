@@ -44,6 +44,8 @@ run:
       value: sm://{{.projectId}}/wtwm-api-user
     - name: WTWM_API_PASS
       value: sm://{{.projectId}}/wtwm-api-pass-target
+    - name: JWT_SECRET
+      value: sm://{{.projectId}}/wtwm-jwt-secret
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
