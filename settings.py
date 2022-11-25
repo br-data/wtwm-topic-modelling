@@ -28,9 +28,3 @@ MAX_NUMBER_PUBLISH = 5
 TEST_TARGET = os.environ["TEST_TARGET"]
 MDR_TARGET = os.environ["MDR_TARGET"]
 BR_TARGET = os.environ["BR_TARGET"]
-
-# auth
-WTWM_API_USER = os.environ["WTWM_API_USER"]
-WTWM_API_PASS = os.environ["WTWM_API_PASS"]
-JWT_ALGORITHM = os.environ["JWT_ALGORITHM"]
-JWT_SECRET = os.environ["JWT_ALGORITHM"]

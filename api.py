@@ -34,7 +34,6 @@ from src.storage.postgres import (
 )
 from settings import BUGG_MODEL_V1_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
 from src.exceptions import PreprocessingError
-from src.api.auth.auth_bearer import JWTBearer
 
 SPACY_MODEL = spacy.load(BUGG_MODEL_V1_PATH)
 APP = FastAPI(
@@ -61,7 +60,7 @@ APP.add_middleware(
 )
 
 
-@APP.get("/", dependencies=[Depends(JWTBearer())])
+@APP.get("/")
 async def redirect():
     """Redirect to documentation if index page is called."""
     response = RedirectResponse(url="/docs")
@@ -69,7 +68,7 @@ async def redirect():
 
 
 # Note: Security is done by the dev server for now
-@APP.post("/v1/find_mentions", response_model=RecognitionResponse, dependencies=[Depends(JWTBearer())])
+@APP.post("/v1/find_mentions", response_model=RecognitionResponse)
 async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     """Find mentions of the editorial team in a comment."""
     type_ = ModelType.GPT2
@@ -90,7 +89,7 @@ async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     )
 
 
-@APP.get("/v1/get_mdr_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/get_mdr_comments", response_model=BaseResponse)
 def update_comments_from_mdr(
     query: dict[str, Any] = Depends(MDRUpdateRequest.query_template)
 ) -> BaseResponse:
@@ -124,7 +123,7 @@ def update_comments_from_mdr(
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/get_latest_br_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/get_latest_br_comments", response_model=BaseResponse)
 def get_latest_br_comments(
     query: dict[str, Any] = Depends(BRUpdateRequest.query_template)
 ) -> BaseResponse:
@@ -158,7 +157,7 @@ def get_latest_br_comments(
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/add_mentions_to_stored_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/add_mentions_to_stored_comments", response_model=BaseResponse)
 def add_mentions_to_stored_comments() -> BaseResponse:
     """Add extraction result to unprocessed comments."""
     engine = get_engine(POSTGRES_URI)
@@ -189,7 +188,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/send_comments_to_teams", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/send_comments_to_teams", response_model=BaseResponse)
 def send_comments_to_teams() -> BaseResponse:
     """Get unsend comments and publish them to teams."""
     engine = get_engine(POSTGRES_URI)
@@ -214,7 +213,7 @@ def send_comments_to_teams() -> BaseResponse:
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/get_latest_mentions", response_model=LatestMentionsResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/get_latest_mentions", response_model=LatestMentionsResponse)
 def get_mentions() -> LatestMentionsResponse:
     """Return a list of the latest comments with mentions."""
     engine = get_engine(POSTGRES_URI)
@@ -228,7 +227,7 @@ def get_mentions() -> LatestMentionsResponse:
     return LatestMentionsResponse(status="ok", msg=msg, result=latest_mentions)
 
 
-@APP.get("/v1/feedback", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/feedback", response_model=BaseResponse)
 def give_feedback(
     query: dict[str, Any] = Depends(FeedbackRequest.query_template)
 ) -> BaseResponse:
@@ -253,7 +252,7 @@ def give_feedback(
         return BaseResponse(status="ok", msg=f"Updated comment status with feedback.")
 
 
-@APP.get("/v1/reload_model", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get("/v1/reload_model", response_model=BaseResponse)
 def reload_model() -> BaseResponse:
     """Reload a model from the bucket into this running API."""
     try:
