@@ -32,5 +32,5 @@ BR_TARGET = os.environ["BR_TARGET"]
 # auth
 WTWM_API_USER = os.environ["WTWM_API_USER"]
 WTWM_API_PASS = os.environ["WTWM_API_PASS"]
-JWT_ALGORITHM = "HS256"
-JWT_SECRET = os.environ["JWT_SECRET"]
+JWT_ALGORITHM = os.environ["JWT_ALGORITHM"]
+JWT_SECRET = os.environ["JWT_ALGORITHM"]
