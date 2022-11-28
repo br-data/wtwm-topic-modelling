@@ -36,6 +36,7 @@ from src.storage.postgres import (
 from settings import BUGG_MODEL_V1_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
 from src.exceptions import PreprocessingError
 
+ENGINE = get_engine(POSTGRES_URI)
 SPACY_MODEL = spacy.load(BUGG_MODEL_V1_PATH)
 APP = FastAPI(
     title="WTWM mention extractor",
@@ -98,8 +99,7 @@ def update_comments_from_mdr(
     config = MDRUpdateRequest.from_query(query)
     get_comments = MDRCommentGetter()
     # postgres credentials
-    engine = get_engine(POSTGRES_URI)
-    create_tables(engine)
+    create_tables(ENGINE)
     # process comments
     comments = []
     for raw_comment in get_comments(config.from_, config.to):
@@ -116,7 +116,7 @@ def update_comments_from_mdr(
     # TODO when needed
     # raw_comments = load_comments_from_bucket(path)
     # write to database
-    with TableWriter(engine, purge=False) as writer:
+    with TableWriter(ENGINE, purge=False) as writer:
         for comment in comments:
             writer.write(comment)
 
@@ -132,8 +132,7 @@ def get_latest_br_comments(
     config = BRUpdateRequest.from_query(query)
     get_comments = BRCommentGetter()
     # postgres credentials
-    engine = get_engine(POSTGRES_URI)
-    create_tables(engine)
+    create_tables(ENGINE)
     # process comments
     comments = []
     for raw_comment in get_comments(config.lookback):
@@ -150,7 +149,7 @@ def get_latest_br_comments(
     # TODO when needed
     # raw_comments = load_comments_from_bucket(path)
     # write to database
-    with TableWriter(engine, purge=False) as writer:
+    with TableWriter(ENGINE, purge=False) as writer:
         for comment in comments:
             writer.write(comment)
 
@@ -161,8 +160,7 @@ def get_latest_br_comments(
 @APP.get("/v1/add_mentions_to_stored_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
 def add_mentions_to_stored_comments() -> BaseResponse:
     """Add extraction result to unprocessed comments."""
-    engine = get_engine(POSTGRES_URI)
-    session = sessionmaker()(bind=engine)
+    session = sessionmaker()(bind=ENGINE)
     comments = get_unprocessed(session)
     mentions = []
     type_ = ModelType.GPT2
@@ -181,10 +179,11 @@ def add_mentions_to_stored_comments() -> BaseResponse:
             else:
                 comment.status = Status.NO_MENTIONS
 
-    with TableWriter(engine, session=session, purge=False) as writer:
+    with TableWriter(ENGINE, session=session, purge=False) as writer:
         for comment in comments:
             writer.update(comment)
 
+    session.close()
     msg = f"Processed and updated {len(comments)} comments."
     return BaseResponse(status="ok", msg=msg)
 
@@ -192,8 +191,7 @@ def add_mentions_to_stored_comments() -> BaseResponse:
 @APP.get("/v1/send_comments_to_teams", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
 def send_comments_to_teams() -> BaseResponse:
     """Get unsend comments and publish them to teams."""
-    engine = get_engine(POSTGRES_URI)
-    session = sessionmaker()(bind=engine)
+    session = sessionmaker()(bind=ENGINE)
     unpublished_comments = get_unpublished(session)
     if not unpublished_comments:
         msg = "No new comments to publish."
@@ -201,7 +199,7 @@ def send_comments_to_teams() -> BaseResponse:
 
     lookback_minutes = 15
     unpublished_comments = check_expiration_time(unpublished_comments, lookback_minutes)
-    with TableWriter(engine, session=session, purge=False) as writer:
+    with TableWriter(ENGINE, session=session, purge=False) as writer:
         for media_house_id in ["mdr", "br"]:
             connector = TeamsConnector(MediaHouse.from_id(media_house_id))
             # TODO switch back to media house related publishing. Now all comments are published to each media house
@@ -210,6 +208,7 @@ def send_comments_to_teams() -> BaseResponse:
         # TODO set back to count per media house
         pub_buf = len(unpublished_comments)
 
+    session.close()
     msg = f"Published {pub_buf} comments."
     return BaseResponse(status="ok", msg=msg)
 
@@ -217,12 +216,12 @@ def send_comments_to_teams() -> BaseResponse:
 @APP.get("/v1/get_latest_mentions", response_model=LatestMentionsResponse, dependencies=[Depends(JWTBearer())])
 def get_mentions() -> LatestMentionsResponse:
     """Return a list of the latest comments with mentions."""
-    engine = get_engine(POSTGRES_URI)
-    session = sessionmaker()(bind=engine)
+    session = sessionmaker()(bind=ENGINE)
     latest_mentions = get_latest_mentions(session)
-    if not latest_mentions:
+    session.close()
+    if not latest_mentions or latest_mentions is None:
         msg = "No comments with mentions lately."
-        return BaseResponse(status="ok", msg=msg)
+        return LatestMentionsResponse(status="ok", msg=msg, result=[])
 
     msg = f"Found {len(latest_mentions)} comments with mentions."
     return LatestMentionsResponse(status="ok", msg=msg, result=latest_mentions)
@@ -239,9 +238,8 @@ def give_feedback(
         msg = f"Query is illformed: '{exc}'"
         raise HTTPException(status_code=ErrorCode.NOT_FOUND.value, detail=msg)
     else:
-        engine = get_engine(POSTGRES_URI)
-        session = sessionmaker()(bind=engine)
-        with TableWriter(engine, session=session, purge=False) as writer:
+        session = sessionmaker()(bind=ENGINE)
+        with TableWriter(ENGINE, session=session, purge=False) as writer:
             comment = writer.get_comment(config.id)
             if comment is None:
                 msg = f"No comment with id: '{config.id}'"
@@ -250,6 +248,7 @@ def give_feedback(
             comment.status = config.choice
             writer.update(comment)
 
+        session.close()
         return BaseResponse(status="ok", msg=f"Updated comment status with feedback.")
 
 
