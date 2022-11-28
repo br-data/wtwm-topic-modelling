@@ -40,9 +40,14 @@ run:
       value: sm://{{.projectId}}/wtwm-br-target
     - name: TEST_TARGET
       value: sm://{{.projectId}}/wtwm-test-target
+    - name: JWT_ALGORITHM
+      value: "HS256"
+    - name: JWT_SECRET
+      value: sm://{{.projectId}}/cors-test-jwt-secret
 settings:
   type: service
   persistentBucket: wtwm-data-bucket
+  inSecure: true
   database:
     type: postgresql
     size: 15
