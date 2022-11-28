@@ -12,6 +12,10 @@ This project documents the status of the project work during JournalismAI fellow
 6. forward moderation team to comment in moderation tool
 7. collect feedback by moderation team to improve model
 
+## Architecture
+
+![architecture overview](docs/architecture.png "overview of the architecture")
+
 ## Local setup
 
 Create a virtualenv using
