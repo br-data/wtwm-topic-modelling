@@ -27,7 +27,7 @@ def _get_request_body(comments: list[Comment]) -> dict[str, list[dict[str, Any]]
     :param comments: list of comments to publish
     """
     return {
-        "data": [{"id": comment.id, "comment": comment.body} for comment in comments]
+        "data": [{"id": comment.id, "comment": comment.body.replace('"', "'")} for comment in comments]
     }
 
 
