@@ -1,6 +1,6 @@
 # WTWM Newsroom Mentions Detector
 
-This repository contains the source code of a joint project of the [AI + Automation Lab of Bayerischer Rundfunk](https://www.br.de/extra/ai-automation-lab/index.html) (abbr. BR) and [Mitteldeutscher Rundfunk](https://www.mdr.de) (abbr. mdr) as well as [ida](https://idalab.de) to identify user comments that address the newsrooms to foster constructive exchange with our audiences.
+This repository contains the source code of a [joint project](https://interaktiv.br.de/ai-detect-newsroom-mentions-in-comments/) of the [AI + Automation Lab of Bayerischer Rundfunk](https://www.br.de/extra/ai-automation-lab/index.html) (abbr. BR) and [Mitteldeutscher Rundfunk](https://www.mdr.de) (abbr. mdr) as well as [ida](https://idalab.de) to identify user comments that address the newsrooms to foster constructive exchange with our audiences.
 
 This project documents the status of the project work during JournalismAI fellowship in 2022. The fellowship was used by this projects team to explore technical solutions to support the mdr and BRs comment moderation teams. The goal was to allow the moderation teams to engage in real time communication with it's audience. For this purpose we constructed a system to bring comments with direct mentions of the media house to the immediate attention of the moderation team. That involves:
 
@@ -11,6 +11,8 @@ This project documents the status of the project work during JournalismAI fellow
 5. publish the relevant comments to the moderations teams instance
 6. forward moderation team to comment in moderation tool
 7. collect feedback by moderation team to improve model
+
+Part of the running project is a text classification model that was released on [huggingface](https://huggingface.co/aiautomationlab/wtwm-gpt2-based-mentions-detector).
 
 ## Architecture
 
@@ -56,6 +58,8 @@ The comment data from BR and mdr is provided through APIs external to this repos
 ## File/Model storage
 
 Data files and the various models are stored in a persistent google bucket that is connected by the deployment routine to the pod.
+
+The classification model, that was last used for the running system, can be found [here](https://huggingface.co/aiautomationlab/wtwm-gpt2-based-mentions-detector).
 
 ## Database integration
 
