@@ -2,7 +2,7 @@
 
 This repository contains the source code of a [joint project](https://interaktiv.br.de/ai-detect-newsroom-mentions-in-comments/) of the [AI + Automation Lab of Bayerischer Rundfunk](https://www.br.de/extra/ai-automation-lab/index.html) (abbr. BR) and [Mitteldeutscher Rundfunk](https://www.mdr.de) (abbr. mdr) as well as [ida](https://idalab.de) to identify user comments that address the newsrooms to foster constructive exchange with our audiences.
 
-This project documents the status of the project work during JournalismAI fellowship in 2022. The fellowship was used by this projects team to explore technical solutions to support the mdr and BRs comment moderation teams. The goal was to allow the moderation teams to engage in real time communication with it's audience. For this purpose we constructed a system to bring comments with direct mentions of the media house to the immediate attention of the moderation team. That involves:
+This project documents the status of the project work during JournalismAI fellowship (more info bellow in chapter **On the fellowship**) in 2022. The fellowship was used by this projects team to explore technical solutions to support the mdr and BRs comment moderation teams. The goal was to allow the moderation teams to engage in real time communication with it's audience. For this purpose we constructed a system to bring comments with direct mentions of the media house to the immediate attention of the moderation team. That involves:
 
 1. fetch the comment instantanenoulsy
 2. preprocess the comments
@@ -72,3 +72,7 @@ The project's APIs are document via the endpoint [/docs](https://wtwm-topic-mode
 ## Authentication
 
 API endpoints are secured by a bearer token. Requests must include the bearer token to be accepted.
+
+## On the fellowship
+
+[JournalismAI](https://www.lse.ac.uk/media-and-communications/polis/JournalismAI) is a project of [Polis](https://www.lse.ac.uk/media-and-communications/polis) – the journalism think-tank at the London School of Economics and Political Science – and it’s sponsored by the [Google News Initiative](https://newsinitiative.withgoogle.com/)). If you want to know more about the Fellowship and the other JournalismAI activities, [sign up for the newsletter](https://mailchi.mp/lse.ac.uk/journalismai) or get in touch with the team via hello@journalismai.info
