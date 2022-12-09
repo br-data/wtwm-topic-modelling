@@ -4,7 +4,7 @@ from sqlalchemy.engine.base import Connection, Engine  # type: ignore
 from sqlalchemy.orm import sessionmaker  # type: ignore
 from sqlalchemy.exc import IntegrityError, OperationalError  # type: ignore
 from sqlalchemy import create_engine, and_  # type: ignore
-from src.models import BASE, Comment, RecognitionResult, Status
+from src.models import BASE, Comment, RecognitionResult, Status, MediaHouse
 
 
 SESSION = sessionmaker()
@@ -159,10 +159,10 @@ def get_latest_mentions(session, max_: int = 4) -> list[Optional[dict]]:
     :param session: running postgress connection
     :param max_: max number of comments to return
     """
-    comments =  (
+    comments = (
         session.query(Comment)
         .join(RecognitionResult)
-        .filter(Comment.status == Status.ACCEPTED)
+        .filter(and_(Comment.status == Status.ACCEPTED, Comment.media_house == MediaHouse.BR))
         .order_by(Comment.created_at.desc())
         .all()
     )
