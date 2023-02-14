@@ -41,6 +41,7 @@ class Status(Enum):
 class MediaHouse(Enum):
     MDR = "mdr"
     BR = "br"
+    BR_YOUR_ARGUMENT = "your_argument"
     TEST = "test"
 
     @classmethod
@@ -53,6 +54,8 @@ class MediaHouse(Enum):
             return MediaHouse.MDR
         elif id_ == MediaHouse.BR.value:
             return MediaHouse.BR
+        elif id_ == MediaHouse.BR_YOUR_ARGUMENT.value:
+            return MediaHouse.BR_YOUR_ARGUMENT
         elif id_ == MediaHouse.TEST.value:
             return MediaHouse.TEST
         else:
@@ -69,6 +72,8 @@ class MediaHouse(Enum):
             return MDR_TARGET
         elif self == MediaHouse.BR:
             return BR_TARGET
+        elif self == MediaHouse.BR_YOUR_ARGUMENT:
+            return BR_YOUR_ARGUMENT_TARGET
         else:
             raise NotImplementedError(f"Target for {self.value} is not available.")
 

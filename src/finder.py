@@ -31,9 +31,7 @@ def find_mention(
         if got_mentions:
             # Classification doesn't point to text position but classifies the whole text.
             # We add a dummy text position to fit to allow the result format to fit recognition and classification
-            results.append(
-                {"start": -1, "offset": 0, "body": text, "label": "MENTION"}
-            )
+            results.append({"start": -1, "offset": 0, "body": text, "label": "MENTION"})
     else:
         raise NotImplementedError(f"Model type '{type_.value}' is not implemented yet.")
 

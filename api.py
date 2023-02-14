@@ -9,7 +9,12 @@ import spacy
 import uuid
 
 from src.auth.auth_bearer import JWTBearer
-from src.api.response_models import RecognitionResponse, ErrorCode, BaseResponse, LatestMentionsResponse
+from src.api.response_models import (
+    RecognitionResponse,
+    ErrorCode,
+    BaseResponse,
+    LatestMentionsResponse,
+)
 from src.api.request_models import (
     ExtractorRequestBody,
     MDRUpdateRequest,
@@ -31,7 +36,7 @@ from src.storage.postgres import (
     sessionmaker,
     get_unpublished,
     get_unprocessed,
-    get_latest_mentions
+    get_latest_mentions,
 )
 from settings import BUGG_MODEL_V1_PATH, BACKUP_PATH, POSTGRES_URI, MAX_NUMBER_PUBLISH
 from src.exceptions import PreprocessingError
@@ -70,7 +75,11 @@ async def redirect():
 
 
 # Note: Security is done by the dev server for now
-@APP.post("/v1/find_mentions", response_model=RecognitionResponse, dependencies=[Depends(JWTBearer())])
+@APP.post(
+    "/v1/find_mentions",
+    response_model=RecognitionResponse,
+    dependencies=[Depends(JWTBearer())],
+)
 async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     """Find mentions of the editorial team in a comment."""
     type_ = ModelType.GPT2
@@ -91,7 +100,11 @@ async def find_mentions(body: ExtractorRequestBody) -> RecognitionResponse:
     )
 
 
-@APP.get("/v1/get_mdr_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/get_mdr_comments",
+    response_model=BaseResponse,
+    dependencies=[Depends(JWTBearer())],
+)
 def update_comments_from_mdr(
     query: dict[str, Any] = Depends(MDRUpdateRequest.query_template)
 ) -> BaseResponse:
@@ -124,7 +137,11 @@ def update_comments_from_mdr(
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/get_latest_br_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/get_latest_br_comments",
+    response_model=BaseResponse,
+    dependencies=[Depends(JWTBearer())],
+)
 def get_latest_br_comments(
     query: dict[str, Any] = Depends(BRUpdateRequest.query_template)
 ) -> BaseResponse:
@@ -157,7 +174,11 @@ def get_latest_br_comments(
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/add_mentions_to_stored_comments", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/add_mentions_to_stored_comments",
+    response_model=BaseResponse,
+    dependencies=[Depends(JWTBearer())],
+)
 def add_mentions_to_stored_comments() -> BaseResponse:
     """Add extraction result to unprocessed comments."""
     session = sessionmaker()(bind=ENGINE)
@@ -188,7 +209,11 @@ def add_mentions_to_stored_comments() -> BaseResponse:
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/send_comments_to_teams", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/send_comments_to_teams",
+    response_model=BaseResponse,
+    dependencies=[Depends(JWTBearer())],
+)
 def send_comments_to_teams() -> BaseResponse:
     """Get unsend comments and publish them to teams."""
     session = sessionmaker()(bind=ENGINE)
@@ -222,7 +247,11 @@ def send_comments_to_teams() -> BaseResponse:
     return BaseResponse(status="ok", msg=msg)
 
 
-@APP.get("/v1/get_latest_mentions", response_model=LatestMentionsResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/get_latest_mentions",
+    response_model=LatestMentionsResponse,
+    dependencies=[Depends(JWTBearer())],
+)
 def get_mentions() -> LatestMentionsResponse:
     """Return a list of the latest comments with mentions."""
     session = sessionmaker()(bind=ENGINE)
@@ -236,7 +265,9 @@ def get_mentions() -> LatestMentionsResponse:
     return LatestMentionsResponse(status="ok", msg=msg, result=latest_mentions)
 
 
-@APP.get("/v1/feedback", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/feedback", response_model=BaseResponse, dependencies=[Depends(JWTBearer())]
+)
 def give_feedback(
     query: dict[str, Any] = Depends(FeedbackRequest.query_template)
 ) -> BaseResponse:
@@ -261,7 +292,9 @@ def give_feedback(
         return BaseResponse(status="ok", msg=f"Updated comment status with feedback.")
 
 
-@APP.get("/v1/reload_model", response_model=BaseResponse, dependencies=[Depends(JWTBearer())])
+@APP.get(
+    "/v1/reload_model", response_model=BaseResponse, dependencies=[Depends(JWTBearer())]
+)
 def reload_model() -> BaseResponse:
     """Reload a model from the bucket into this running API."""
     try:

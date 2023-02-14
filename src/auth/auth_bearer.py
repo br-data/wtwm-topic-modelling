@@ -42,5 +42,3 @@ class JWTBearer(HTTPBearer):
                 return True
 
         return False
-
-

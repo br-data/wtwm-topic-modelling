@@ -162,14 +162,15 @@ def get_latest_mentions(session, max_: int = 4) -> list[Optional[dict]]:
     comments = (
         session.query(Comment)
         .join(RecognitionResult)
-        .filter(and_(Comment.status == Status.ACCEPTED, Comment.media_house == MediaHouse.BR))
+        .filter(
+            and_(
+                Comment.status == Status.ACCEPTED, Comment.media_house == MediaHouse.BR
+            )
+        )
         .order_by(Comment.created_at.desc())
         .all()
     )
     return [
-        {
-            "id": comment.id,
-            "text": comment.body,
-            "timestamp": comment.last_updated_at
-        } for comment in comments[:max_]
+        {"id": comment.id, "text": comment.body, "timestamp": comment.last_updated_at}
+        for comment in comments[:max_]
     ]
