@@ -208,6 +208,15 @@ def send_comments_to_teams() -> BaseResponse:
         # TODO set back to count per media house
         pub_buf = len(unpublished_comments)
 
+        # 'YourArgument' project publication
+        connector = TeamsConnector(MediaHouse.from_id("your_argument"))
+        send_comments(
+            connector,
+            [c for c in unpublished_comments if c.media_house == MediaHouse.BR],
+            writer,
+            MAX_NUMBER_PUBLISH,
+        )
+
     session.close()
     msg = f"Published {pub_buf} comments."
     return BaseResponse(status="ok", msg=msg)

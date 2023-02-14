@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship  # type: ignore
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Text
 from sqlalchemy import Enum as SQLEnum
 
-from settings import MDR_TARGET, BR_TARGET, TEST_TARGET
+from settings import MDR_TARGET, BR_TARGET, BR_YOUR_ARGUMENT_TARGET, TEST_TARGET
 
 
 BASE = declarative_base()

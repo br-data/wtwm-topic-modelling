@@ -38,6 +38,8 @@ run:
       value: sm://{{.projectId}}/wtwm-mdr-target
     - name: BR_TARGET
       value: sm://{{.projectId}}/wtwm-br-target
+    - name: BR_YOUR_ARGUMENT_TARGET
+      value: sm://{{.projectId}}/pa-your-argument-target
     - name: TEST_TARGET
       value: sm://{{.projectId}}/wtwm-test-target
     - name: JWT_ALGORITHM
