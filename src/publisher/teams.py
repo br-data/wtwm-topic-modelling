@@ -1,4 +1,5 @@
 from typing import Any
+from requests.exceptions import HTTPError
 
 from src.tools import request
 
@@ -47,15 +48,20 @@ def send_comments(
 ) -> None:
     """Send comments to teams.
 
-    :param connector: teams connection interfacel
+    :param connector: teams connection interface
     :param comments: comments to send
     :param writer: database interface
     :param max_number_to_publish: max number of comments to publish each session
     """
     for comment_entry in comments[: max_number_to_publish + 1]:
         # send one comment at once for now to ensure db update of status
-        connector.send([comment_entry])
-        comment_entry.status = Status.WAIT_FOR_EVALUATION
-        # update status everytime to prevent status update fail in case of chrash
-        # if necessary build pub/sub after prototype phase
-        writer.update(comment_entry)
+        try:
+            connector.send([comment_entry])
+        except HTTPError as exc:
+            print(f"Error while sending to {connector.media_house.value} at {exc}")
+            print(f"Skipping comments")
+        else:
+            comment_entry.status = Status.WAIT_FOR_EVALUATION
+            # update status everytime to prevent status update fail in case of crash
+            # if necessary build pub/sub after prototype phase
+            writer.update(comment_entry)
