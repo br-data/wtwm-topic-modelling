@@ -17,7 +17,7 @@ class BRCommentGetter(BaseModel):
         :param lookback: lookback from now in hours
         """
         query = {"lookback": lookback}
-        headers = {"Authorization": f"Basic {self.token}"}
+        headers = {"Authorization": f"Bearer {self.token}"}
         response = request(self.url, method="Get", body=query, headers=headers)
         return response["result"]
 
