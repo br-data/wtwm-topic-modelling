@@ -222,7 +222,7 @@ def send_comments_to_teams() -> BaseResponse:
         msg = "No new comments to publish."
         return BaseResponse(status="ok", msg=msg)
 
-    lookback_minutes = 15
+    lookback_minutes = 30
     unpublished_comments = check_expiration_time(unpublished_comments, lookback_minutes)
     with TableWriter(ENGINE, session=session, purge=False) as writer:
         for media_house_id in ["mdr", "br"]:
