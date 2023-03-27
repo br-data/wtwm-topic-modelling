@@ -4,11 +4,11 @@ This repository contains the source code of a [joint project](https://interaktiv
 
 This project documents the status of the project work during JournalismAI fellowship (more info bellow in chapter **On the fellowship**) in 2022. The fellowship was used by this projects team to explore technical solutions to support the mdr and BRs comment moderation teams. The goal was to allow the moderation teams to engage in real time communication with it's audience. For this purpose we constructed a system to bring comments with direct mentions of the media house to the immediate attention of the moderation team. That involves:
 
-1. fetch the comment instantanenoulsy
+1. fetch the comment instantaneoulsy
 2. preprocess the comments
 3. store the comments
 4. classify the into relevant and irrelevant comments
-5. publish the relevant comments to the moderations teams instance
+5. publish the relevant comments to the moderation teams instance
 6. forward moderation team to comment in moderation tool
 7. collect feedback by moderation team to improve model
 
