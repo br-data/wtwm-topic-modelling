@@ -12,7 +12,6 @@ This project documents the status of the project work during JournalismAI fellow
 6. forward moderation team to comment in moderation tool
 7. collect feedback by moderation team to improve model
 
-
 Part of the running project is a text classification model that was released on [huggingface](https://huggingface.co/aiautomationlab/wtwm-gpt2-based-mentions-detector).
 
 ## Architecture
